@@ -1,0 +1,37 @@
+# Usługi panelu quince_block.
+#
+# Każda klasa wpisana jawnie, bez skanowania całego `src/`: część frontu ma własny
+# plik (`core.yml`) i dwa skany tego samego katalogu nadpisywałyby sobie definicje.
+#
+# Warunek dla każdej klasy tutaj: konstruktor przyjmuje wyłącznie inne klasy modułu
+# (albo nic). Skalar bez wartości domyślnej zatrzymuje budowę kontenera, czyli cały
+# panel PrestaShopa, nie tylko ekran modułu.
+
+services:
+  _defaults:
+    public: true
+    autowire: true
+    autoconfigure: true
+
+  # Kontrolery z tagiem: PrestaShop wykrywa kontrolery modułów wyrażeniem regularnym
+  # po treści pliku i nie rozpoznaje klas dziedziczących po własnej klasie pośredniej.
+  # Klasa abstrakcyjna (BlockBaseController) jest przez skan pomijana.
+  Quince\Block\Controller\Admin\:
+    resource: '../../src/Controller/Admin/'
+    exclude:
+      - '../../src/Controller/Admin/index.php'
+    tags: ['controller.service_arguments']
+
+  Quince\Block\Storage\BlockRepository: ~
+  Quince\Block\Storage\HookRepository: ~
+  Quince\Block\Storage\RuleRepository: ~
+  Quince\Block\Storage\StatsRepository: ~
+  Quince\Block\Storage\VersionRepository: ~
+
+  Quince\Block\Ui\PanelNavigation: ~
+  Quince\Block\Ui\Choices: ~
+  Quince\Block\Ui\RuleSummary: ~
+
+  Quince\Block\Tools\RuleNormalizer: ~
+  Quince\Block\Tools\BlockTester: ~
+  Quince\Block\Tools\Transfer: ~

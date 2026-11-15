@@ -1,0 +1,570 @@
+{# Edycja bloku: podstrona listy z sekcjami Treść, Wyświetlanie, Reguły, Test A/B
+   i Historia. Treść, Wyświetlanie i ustawienia testu to jeden formularz z jednym
+   zapisem. Reguły zapisują się osobno (JSON), historia i podgląd mają własne
+   formularze, dlatego stoją poza formularzem bloku. #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% block quince_actions_info %}
+    {% if id and block.date_upd %}{{ 'Last saved: %date%'|trans({'%date%': block.date_upd}) }}{% endif %}
+{% endblock %}
+
+{% block quince_actions %}
+    <a class="qc-btn qc-btn-outline" href="{{ path('quince_block_blocks') }}">{{ 'Back to the list'|trans }}</a>
+    <button type="submit" form="qb-block-form" class="qc-btn qc-btn-primary">
+        {{ icons.icon('check', 14) }} {{ id ? 'Save changes'|trans : 'Create block'|trans }}
+    </button>
+{% endblock %}
+
+{% block quince_body %}
+{% set defaultLang = (languages|filter(l => l.default)|first).id_lang|default(languages|first.id_lang) %}
+{% set firstShop = shops|first.id|default(0) %}
+
+{# Dane formularza reguł: w elemencie skryptu, nie w atrybucie, bo nazwy
+   kategorii i produktów bywają z cudzysłowami. #}
+<script type="application/json" id="qb-rules-data">{{ {
+    'idBlock': id,
+    'types': ruleTypes,
+    'rules': rules,
+    'choices': choices,
+    'productNames': productNames,
+    'urls': {
+        'save': path('quince_block_rule_save'),
+        'delete': path('quince_block_rule_delete'),
+        'lookup': path('quince_block_lookup')
+    },
+    'texts': {
+        'confirmDelete': 'Remove this rule?'|trans,
+        'searchHint': 'Type to search...'|trans,
+        'noMatch': 'Nothing found.'|trans,
+        'choose': '(choose)'|trans,
+        'any': '(any)'|trans,
+        'addTag': 'Type a word and press Enter'|trans
+    }
+}|json_encode|raw }}</script>
+
+<div x-data="quinceBlockEdit({{ {
+        tab: section,
+        shop: firstShop,
+        lang: defaultLang,
+        ab: block.ab_enabled,
+        logic: block.rule_logic,
+        days: block.days|map(d => d ~ ''),
+        ruleCount: rules|length
+    }|json_encode }})" @qb-rules-changed.window="ruleCount = $event.detail">
+
+    <form id="qb-block-form" method="post" action="{{ path('quince_block_block_save') }}" class="qc-stack">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_save') }}">
+        <input type="hidden" name="id" value="{{ id }}">
+        <input type="hidden" name="section" :value="tab">
+
+        {# ── Ogólne: zawsze na wierzchu ── #}
+        <div class="qc-card">
+            <div class="qc-card-body">
+                <div class="qc-form-grid" style="grid-template-columns:minmax(0,1fr) auto">
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-title">{{ 'Title'|trans }}</label>
+                        <input type="text" id="qb-title" name="title" class="qc-field-base qc-focusable" maxlength="255"
+                               value="{{ block.title }}" placeholder="{{ 'Seen only in the back office'|trans }}">
+                        <div class="qc-hint">{{ 'Helps you find the block in this panel. Visitors do not see it.'|trans }}</div>
+                    </div>
+                    <div class="qc-field">
+                        <span class="qc-label">{{ 'Status'|trans }}</span>
+                        <label class="qc-toggle">
+                            <input type="hidden" name="active" value="0">
+                            <input type="checkbox" name="active" value="1"{{ block.active ? ' checked' }}>
+                            <span class="qc-toggle-track"></span>
+                            <span class="qc-toggle-text">{{ 'Shown in the shop'|trans }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="qc-tabs" role="tablist">
+            {% for key, label in {
+                'content': 'Content'|trans,
+                'display': 'Display'|trans,
+                'rules': 'Rules'|trans,
+                'ab': 'A/B test'|trans,
+                'history': 'History'|trans
+            } %}
+                <button type="button" class="qc-tab" role="tab" :class="tab === '{{ key }}' && 'qc-active'"
+                        :aria-selected="tab === '{{ key }}'" @click="tab = '{{ key }}'">
+                    {{ label }}
+                    {% if key == 'rules' and id %}<span class="qc-badge" x-text="ruleCount">{{ rules|length }}</span>{% endif %}
+                </button>
+            {% endfor %}
+        </nav>
+
+        {# ── Treść ── #}
+        <div class="qc-stack" x-show="tab === 'content'">
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'Content'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'HTML of the block, separately for each shop and language.'|trans }}</div>
+                    </div>
+
+                    <div class="qc-hstack">
+                        {% if shops|length > 1 %}
+                            <div class="qc-seg qc-seg-wrap" role="group" aria-label="{{ 'Shop'|trans }}">
+                                {% for shop in shops %}
+                                    <button type="button" class="qc-seg-btn" :class="shop === {{ shop.id }} && 'is-active'"
+                                            @click="shop = {{ shop.id }}">{{ shop.name }}</button>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {# Jeden wybór języka dla wszystkich pól treści: treść, wariant B,
+                           kod w head i stopce to jedna wersja językowa bloku. #}
+                        <div class="qc-multilang-row" @click.outside="langOpen = false">
+                            <button type="button" class="qc-lang-toggle" @click="langOpen = !langOpen"
+                                    :aria-expanded="langOpen" aria-haspopup="listbox">
+                                <span class="qc-lang-dot" :class="filled(shop, lang) && 'qc-complete'"></span>
+                                {% for language in languages %}
+                                    <span x-show="lang === {{ language.id_lang }}">{{ language.iso_code|upper }}</span>
+                                {% endfor %}
+                                <svg class="qc-icon" width="12" height="12" viewBox="0 0 16 16" fill="none"
+                                     stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+                            </button>
+
+                            <div class="qc-lang-menu" x-show="langOpen" x-cloak role="listbox">
+                                {% for language in languages %}
+                                    <div class="qc-lang-row" :class="lang === {{ language.id_lang }} && 'qc-current'"
+                                         role="option" @click="lang = {{ language.id_lang }}; langOpen = false">
+                                        <span class="qc-lang-dot" :class="filled(shop, {{ language.id_lang }}) && 'qc-complete'"></span>
+                                        <span class="qc-lang-row-name">{{ language.name }}</span>
+                                        <span class="qc-lang-row-status" x-show="!filled(shop, {{ language.id_lang }})" x-cloak>
+                                            {{ 'no content'|trans }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qc-card-body qc-stack">
+                    {% set contentFields = {
+                        'content': {'label': 'Content'|trans, 'hint': 'Shown in the hooks the block is assigned to. Placeholders below are replaced with shop data.'|trans, 'rows': 14},
+                        'content_b': {'label': 'Variant B content'|trans, 'hint': 'Shown to half of the visitors while the A/B test is on.'|trans, 'rows': 14},
+                        'head_code': {'label': 'Code in the page head'|trans, 'hint': 'Added to <head> on pages where the block passes its rules and schedule.'|trans, 'rows': 6},
+                        'footer_code': {'label': 'Code before the end of the page'|trans, 'hint': 'Added before </body> on pages where the block passes its rules and schedule.'|trans, 'rows': 6}
+                    } %}
+
+                    {% for field, meta in contentFields %}
+                        <div class="qc-field"{% if field == 'content_b' %} x-show="ab" x-cloak{% endif %}>
+                            <span class="qc-label">{{ meta.label }}</span>
+                            {% for shop in shops %}
+                                {% for language in languages %}
+                                    <textarea name="content[{{ shop.id }}][{{ language.id_lang }}][{{ field }}]"
+                                              class="qc-field-base qc-focusable qb-code" rows="{{ meta.rows }}" spellcheck="false"
+                                              x-show="shop === {{ shop.id }} && lang === {{ language.id_lang }}"
+                                              @focus="remember($el)" @input="tick++"
+                                              aria-label="{{ meta.label }} ({{ shop.name }}, {{ language.iso_code|upper }})">{{ contents[shop.id][language.id_lang][field]|default('') }}</textarea>
+                                {% endfor %}
+                            {% endfor %}
+                            <div class="qc-hint">{{ meta.hint }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Placeholdery: klik wstawia znacznik w miejsce kursora w ostatnio użytym polu. #}
+            {% if placeholders %}
+                <div class="qc-card">
+                    <div class="qc-card-head">
+                        <div>
+                            <div class="qc-card-title">{{ 'Placeholders'|trans }}</div>
+                            <div class="qc-card-desc">{{ 'Click a placeholder to insert it where the cursor is in the last field you used.'|trans }}</div>
+                        </div>
+                    </div>
+                    <div class="qc-card-body qc-stack">
+                        {% for group, items in placeholders %}
+                            <div class="qc-section" x-data="{ open: false }" :class="open && 'qc-open'">
+                                <div class="qc-section-head" @click="open = !open">
+                                    <span class="qc-section-title">{{ group }}</span>
+                                    <span class="qc-muted">{{ items|length }}</span>
+                                    {{ icons.icon('chevronDown', 16, 'qc-section-chevron') }}
+                                </div>
+                                <div class="qc-section-body" style="padding-left:14px">
+                                    <div class="qc-table-wrap">
+                                        <table class="qc-table">
+                                            <tbody>
+                                                {% for item in items %}
+                                                    <tr>
+                                                        <td style="width:40%">
+                                                            <button type="button" class="qc-btn qc-btn-text qc-btn-sm qb-code"
+                                                                    @click="insert({{ item.token|json_encode }})">{{ item.token }}</button>
+                                                        </td>
+                                                        <td>{{ item.label }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── Wyświetlanie ── #}
+        <div class="qc-stack" x-show="tab === 'display'" x-cloak>
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'Where'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'Hooks put the block in a place on the page. Several blocks in one hook are shown by position, lowest first.'|trans }}</div>
+                    </div>
+                </div>
+                <div class="qc-card-body">
+                    <div class="qc-form-grid qc-form-grid-3">
+                        <div class="qc-field" x-data="{ open: false, picked: {{ selectedHooks|map(h => h ~ '')|json_encode }} }" @click.outside="open = false">
+                            <span class="qc-label">{{ 'Hooks'|trans }}</span>
+                            <div class="qc-multipick">
+                                <button type="button" class="qc-field-base qc-focusable qc-multipick-btn" @click="open = !open">
+                                    <span class="qc-multipick-label" :class="!picked.length && 'qc-empty-label'"
+                                          x-text="picked.length ? picked.length + ' {{ 'selected'|trans|e('js') }}' : '{{ 'None'|trans|e('js') }}'"></span>
+                                    {{ icons.icon('chevronDown', 14) }}
+                                </button>
+                                <div class="qc-multipick-menu" x-show="open" x-cloak>
+                                    {% for hook in hooks %}
+                                        <label class="qc-multipick-row">
+                                            <input type="checkbox" name="hooks[]" value="{{ hook.id }}" x-model="picked">
+                                            <span>{{ hook.name }}{% if not hook.active %} <span class="qc-muted">({{ 'off'|trans }})</span>{% endif %}</span>
+                                        </label>
+                                    {% else %}
+                                        <div class="qc-empty-text" style="padding:10px">
+                                            {{ 'No hook exists yet.'|trans }} <a href="{{ path('quince_block_hooks') }}">{{ 'Create a hook'|trans }}</a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if multistore %}
+                            <div class="qc-field" x-data="{ open: false, picked: {{ selectedShops|map(s => s ~ '')|json_encode }} }" @click.outside="open = false">
+                                <span class="qc-label">{{ 'Shops'|trans }}</span>
+                                <div class="qc-multipick">
+                                    <button type="button" class="qc-field-base qc-focusable qc-multipick-btn" @click="open = !open">
+                                        <span class="qc-multipick-label" :class="!picked.length && 'qc-empty-label'"
+                                              x-text="picked.length ? picked.length + ' {{ 'selected'|trans|e('js') }}' : '{{ 'None'|trans|e('js') }}'"></span>
+                                        {{ icons.icon('chevronDown', 14) }}
+                                    </button>
+                                    <div class="qc-multipick-menu" x-show="open" x-cloak>
+                                        {% for shop in shops %}
+                                            <label class="qc-multipick-row">
+                                                <input type="checkbox" name="shops[]" value="{{ shop.id }}" x-model="picked">
+                                                <span>{{ shop.name }}</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% if otherShops %}
+                                    <div class="qc-hint">{{ 'Also shown in %count% shops outside the current shop context. Switch the context to change them.'|trans({'%count%': otherShops|length}) }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-position">{{ 'Position'|trans }}</label>
+                            <input type="number" id="qb-position" name="position" min="0" step="1"
+                                   class="qc-field-base qc-focusable" value="{{ block.position }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'When'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'Empty fields mean no limit. Times follow the shop time zone.'|trans }}</div>
+                    </div>
+                </div>
+                <div class="qc-card-body qc-stack">
+                    <div class="qc-form-grid qc-form-grid-4">
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-date-from">{{ 'From date'|trans }}</label>
+                            <input type="date" id="qb-date-from" name="date_from" class="qc-field-base qc-focusable" value="{{ block.date_from }}">
+                        </div>
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-date-to">{{ 'To date'|trans }}</label>
+                            <input type="date" id="qb-date-to" name="date_to" class="qc-field-base qc-focusable" value="{{ block.date_to }}">
+                        </div>
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-time-from">{{ 'From hour'|trans }}</label>
+                            <input type="time" id="qb-time-from" name="time_from" class="qc-field-base qc-focusable" value="{{ block.time_from }}">
+                        </div>
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-time-to">{{ 'To hour'|trans }}</label>
+                            <input type="time" id="qb-time-to" name="time_to" class="qc-field-base qc-focusable" value="{{ block.time_to }}">
+                            <div class="qc-hint">{{ 'An end hour earlier than the start hour runs past midnight.'|trans }}</div>
+                        </div>
+                    </div>
+
+                    <div class="qc-field">
+                        <span class="qc-label">{{ 'Days of the week'|trans }}</span>
+                        <div class="qc-hstack">
+                            {% for day, label in {1: 'Mon'|trans, 2: 'Tue'|trans, 3: 'Wed'|trans, 4: 'Thu'|trans, 5: 'Fri'|trans, 6: 'Sat'|trans, 7: 'Sun'|trans} %}
+                                <label class="qc-toggle qc-toggle-sm">
+                                    <input type="checkbox" name="days[]" value="{{ day }}" x-model="days">
+                                    <span class="qc-toggle-track"></span>
+                                    <span class="qc-toggle-text">{{ label }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="qc-hint" x-show="!days.length" x-cloak>{{ 'No day selected means every day.'|trans }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'Rules and loading'|trans }}</div>
+                    </div>
+                </div>
+                <div class="qc-card-body">
+                    <div class="qc-form-grid qc-form-grid-3">
+                        <div class="qc-field">
+                            <span class="qc-label">{{ 'Show the block when'|trans }}</span>
+                            <div class="qc-radio-group" role="radiogroup">
+                                <label class="qc-radio-opt" :class="logic === 'and' && 'qc-selected'">
+                                    <input type="radio" name="rule_logic" value="and" x-model="logic"> {{ 'All include rules match'|trans }}
+                                </label>
+                                <label class="qc-radio-opt" :class="logic === 'or' && 'qc-selected'">
+                                    <input type="radio" name="rule_logic" value="or" x-model="logic"> {{ 'Any include rule matches'|trans }}
+                                </label>
+                            </div>
+                            <div class="qc-hint">{{ 'An exclude rule that matches always hides the block.'|trans }}</div>
+                        </div>
+
+                        <div class="qc-field">
+                            <span class="qc-label">{{ 'Refresh'|trans }}</span>
+                            <label class="qc-toggle">
+                                <input type="hidden" name="auto_refresh" value="0">
+                                <input type="checkbox" name="auto_refresh" value="1"{{ block.auto_refresh ? ' checked' }}>
+                                <span class="qc-toggle-track"></span>
+                                <span class="qc-toggle-text">{{ 'Reload when the cart changes'|trans }}</span>
+                            </label>
+                            <div class="qc-hint">{{ 'For blocks that show cart values, such as the amount missing to free shipping.'|trans }}</div>
+                        </div>
+
+                        <div class="qc-field">
+                            <span class="qc-label">{{ 'Lazy loading'|trans }}</span>
+                            <label class="qc-toggle">
+                                <input type="hidden" name="lazy_load" value="0">
+                                <input type="checkbox" name="lazy_load" value="1"{{ block.lazy_load ? ' checked' }}>
+                                <span class="qc-toggle-track"></span>
+                                <span class="qc-toggle-text">{{ 'Load when it scrolls into view'|trans }}</span>
+                            </label>
+                            <div class="qc-hint">{{ 'Speeds up the page for blocks far below the fold.'|trans }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Test A/B: ustawienia (część formularza bloku) ── #}
+        <div class="qc-stack" x-show="tab === 'ab'" x-cloak>
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'A/B test'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'Half of the visitors see the content, the other half the variant B content. Views and clicks are counted only with the visitor\'s consent to statistics.'|trans }}</div>
+                    </div>
+                </div>
+                <div class="qc-card-body">
+                    <div class="qc-form-grid qc-form-grid-3">
+                        <div class="qc-field">
+                            <span class="qc-label">{{ 'Test'|trans }}</span>
+                            <label class="qc-toggle">
+                                <input type="hidden" name="ab_enabled" value="0">
+                                <input type="checkbox" name="ab_enabled" value="1" x-model="ab">
+                                <span class="qc-toggle-track"></span>
+                                <span class="qc-toggle-text">{{ 'A/B test on'|trans }}</span>
+                            </label>
+                            <div class="qc-hint">{{ 'Variant B content is set in the Content section.'|trans }}</div>
+                        </div>
+
+                        <div class="qc-field qc-disabled-area" :class="!ab && 'is-off'">
+                            <span class="qc-label">{{ 'Winner'|trans }}</span>
+                            <label class="qc-toggle">
+                                <input type="hidden" name="ab_auto_optimize" value="0">
+                                <input type="checkbox" name="ab_auto_optimize" value="1"{{ block.ab_auto_optimize ? ' checked' }}>
+                                <span class="qc-toggle-track"></span>
+                                <span class="qc-toggle-text">{{ 'Show only the better variant once the test is decided'|trans }}</span>
+                            </label>
+                        </div>
+
+                        <div class="qc-field qc-disabled-area" :class="!ab && 'is-off'">
+                            <label class="qc-label" for="qb-ab-min">{{ 'Views before deciding'|trans }}</label>
+                            <input type="number" id="qb-ab-min" name="ab_min_views" min="100" step="100"
+                                   class="qc-field-base qc-focusable" value="{{ block.ab_min_views }}">
+                            <div class="qc-hint">{{ 'Per variant, at least 100.'|trans }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {# ── Wyświetlanie: podgląd (własny formularz) ── #}
+    {% if id %}
+        <div class="qc-stack" x-show="tab === 'display'" x-cloak style="margin-top:20px">
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'Preview in the shop'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'A private link that shows the saved block even when it is switched off, outside its schedule or hidden by its rules. Anyone with the link can open it.'|trans }}</div>
+                    </div>
+                </div>
+                <div class="qc-card-body">
+                    <form method="post" action="{{ path('quince_block_block_preview') }}" class="qc-hstack">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_preview') }}">
+                        <input type="hidden" name="id" value="{{ id }}">
+                        <input type="hidden" name="section" value="display">
+                        {% if previewUrl %}
+                            <input type="text" class="qc-field-base qc-focusable" readonly value="{{ previewUrl }}"
+                                   style="flex:1 1 320px" aria-label="{{ 'Preview link'|trans }}" @focus="$el.select()">
+                            <a class="qc-btn qc-btn-outline" href="{{ previewUrl }}" target="_blank" rel="noopener">{{ icons.icon('eye', 14) }} {{ 'Open'|trans }}</a>
+                            <button type="submit" class="qc-btn qc-btn-text"
+                                    onclick="return confirm('{{ 'The current link will stop working. Continue?'|trans|e('js') }}')">
+                                {{ icons.icon('refresh', 14) }} {{ 'New link'|trans }}
+                            </button>
+                        {% else %}
+                            <button type="submit" class="qc-btn qc-btn-outline">{{ icons.icon('link', 14) }} {{ 'Create a preview link'|trans }}</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ── Test A/B: wyniki ── #}
+    <div class="qc-stack" x-show="tab === 'ab'" x-cloak style="margin-top:20px">
+        {% if ab %}
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">{{ 'Results'|trans }}</div>
+                        <div class="qc-card-desc">{{ 'All days, shops of the current context.'|trans }}</div>
+                    </div>
+                    <form method="post" action="{{ path('quince_block_block_ab_reset') }}">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_ab_reset') }}">
+                        <input type="hidden" name="id" value="{{ id }}">
+                        <button type="submit" class="qc-btn qc-btn-danger qc-btn-sm"
+                                onclick="return confirm('{{ 'Clear the views and clicks of this block and start counting again?'|trans|e('js') }}')">
+                            {{ icons.icon('refresh', 14) }} {{ 'Reset the test'|trans }}
+                        </button>
+                    </form>
+                </div>
+                <div class="qc-card-body">
+                    <div class="qc-table-wrap">
+                        <table class="qc-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ 'Variant'|trans }}</th>
+                                    <th class="qc-num">{{ 'Views'|trans }}</th>
+                                    <th class="qc-num">{{ 'Clicks'|trans }}</th>
+                                    <th class="qc-num">{{ 'CTR'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for variant, label in {'a': 'A (content)'|trans, 'b': 'B (variant B content)'|trans} %}
+                                    <tr>
+                                        <td>{{ label }}</td>
+                                        <td class="qc-num">{{ ab[variant].views }}</td>
+                                        <td class="qc-num">{{ ab[variant].clicks }}</td>
+                                        <td class="qc-num">{{ ab[variant].ctr|number_format(2) }}%</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="qc-alert qc-alert-info">{{ 'Results appear here after the block is saved.'|trans }}</div>
+        {% endif %}
+    </div>
+
+    {# ── Reguły ── #}
+    <div class="qc-stack" x-show="tab === 'rules'" x-cloak style="margin-top:20px">
+        {% if not id %}
+            <div class="qc-alert qc-alert-info">{{ 'Save the block first, then add its rules.'|trans }}</div>
+        {% elseif not ruleTypes %}
+            <div class="qc-alert qc-alert-warning">{{ 'Rule types are not available. Check that the module files are complete.'|trans }}</div>
+        {% else %}
+            {% include '@Modules/quince_block/views/templates/admin/blocks/_rules.html.twig' %}
+        {% endif %}
+    </div>
+
+    {# ── Historia ── #}
+    <div class="qc-stack" x-show="tab === 'history'" x-cloak style="margin-top:20px">
+        <form id="qb-restore" method="post" action="{{ path('quince_block_block_restore') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_restore') }}">
+            <input type="hidden" name="id" value="{{ id }}">
+        </form>
+
+        <div class="qc-card">
+            <div class="qc-card-head">
+                <div>
+                    <div class="qc-card-title">{{ 'History'|trans }}</div>
+                    <div class="qc-card-desc">{{ 'The block is saved here before every change, with its content, display settings and rules. The last %count% versions are kept.'|trans({'%count%': 50}) }}</div>
+                </div>
+            </div>
+            <div class="qc-card-body">
+                <div class="qc-table-wrap">
+                    <table class="qc-table">
+                        <thead>
+                            <tr>
+                                <th>{{ 'Saved'|trans }}</th>
+                                <th>{{ 'Employee'|trans }}</th>
+                                <th>{{ 'Title'|trans }}</th>
+                                <th class="qc-num">{{ 'Rules'|trans }}</th>
+                                <th style="width:120px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for version in versions %}
+                                <tr>
+                                    <td>{{ version.date }}</td>
+                                    <td>{{ version.employee ?: '-' }}</td>
+                                    <td>{{ version.title ?: 'Untitled block'|trans }}</td>
+                                    <td class="qc-num">{{ version.rules }}</td>
+                                    <td>
+                                        <div class="qc-row-actions" style="opacity:1">
+                                            <button type="submit" form="qb-restore" name="id_version" value="{{ version.id }}"
+                                                    class="qc-btn qc-btn-outline qc-btn-sm"
+                                                    onclick="return confirm('{{ 'Restore this version? The current state is saved to the history first.'|trans|e('js') }}')">
+                                                {{ icons.icon('refresh', 14) }} {{ 'Restore'|trans }}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="qc-empty">
+                                            <span class="qc-empty-icon">{{ icons.icon('file', 36) }}</span>
+                                            <div class="qc-empty-text">{{ 'No earlier versions yet. The first one appears after the next change.'|trans }}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

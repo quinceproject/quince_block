@@ -1,0 +1,210 @@
+# Trasy panelu quince_block.
+#
+# Wszystkie mają `_legacy_controller: 'AdminQuinceBlock'`: moduł ma jedną zakładkę
+# w menu i na niej wiszą uprawnienia sprawdzane przez `#[AdminSecurity]`.
+# Widoki: GET. Zapisy i akcje: POST + CSRF (identyfikator tokenu = nazwa trasy,
+# wywołania z JS niosą token panelu `quince_block_panel` w nagłówku X-CSRF-Token).
+# `_legacy_link` jest unikalny dla każdej trasy; wejście z menu to `AdminQuinceBlock`.
+# Trasa wskazująca nieistniejącą metodę wywraca router całego panelu, więc trasa
+# i akcja powstają razem.
+
+# Bloki: lista
+quince_block_blocks:
+  path: quince/block
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlocksController::indexAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock'
+
+quince_block_block_toggle:
+  path: quince/block/toggle
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlocksController::toggleAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:toggle'
+
+quince_block_block_bulk:
+  path: quince/block/bulk
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlocksController::bulkAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:bulk'
+
+quince_block_block_duplicate:
+  path: quince/block/duplicate
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlocksController::duplicateAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:duplicate'
+
+quince_block_block_delete:
+  path: quince/block/delete
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlocksController::deleteAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:delete'
+
+# Bloki: edycja (id 0 = nowy blok)
+quince_block_block_edit:
+  path: quince/block/edit/{id}
+  methods: [GET]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlockEditController::editAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:edit'
+
+quince_block_block_save:
+  path: quince/block/save
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlockEditController::saveAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:save'
+
+quince_block_block_preview:
+  path: quince/block/preview
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlockEditController::previewAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:preview'
+
+quince_block_block_ab_reset:
+  path: quince/block/ab-reset
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlockEditController::abResetAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:abReset'
+
+quince_block_block_restore:
+  path: quince/block/restore
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\BlockEditController::restoreAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:restore'
+
+# Reguły bloku (JSON)
+quince_block_rule_save:
+  path: quince/block/rule/save
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\RulesController::saveAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:ruleSave'
+
+quince_block_rule_delete:
+  path: quince/block/rule/delete
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\RulesController::deleteAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:ruleDelete'
+
+quince_block_lookup:
+  path: quince/block/lookup
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\RulesController::lookupAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:lookup'
+
+# Hooki
+quince_block_hooks:
+  path: quince/block/hooks
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\HooksController::indexAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:hooks'
+
+quince_block_hook_save:
+  path: quince/block/hooks/save
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\HooksController::saveAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:hookSave'
+
+quince_block_hook_toggle:
+  path: quince/block/hooks/toggle
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\HooksController::toggleAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:hookToggle'
+
+quince_block_hook_delete:
+  path: quince/block/hooks/delete
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\HooksController::deleteAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:hookDelete'
+
+# Statystyki
+quince_block_stats:
+  path: quince/block/stats
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\StatsController::indexAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:stats'
+
+# Narzędzia
+quince_block_tools:
+  path: quince/block/tools
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\ToolsController::indexAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:tools'
+
+quince_block_tools_test:
+  path: quince/block/tools/test
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\ToolsController::testAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:test'
+
+quince_block_tools_export:
+  path: quince/block/tools/export
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\ToolsController::exportAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:export'
+
+quince_block_tools_import:
+  path: quince/block/tools/import
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\ToolsController::importAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:import'
+
+# Ustawienia
+quince_block_settings:
+  path: quince/block/settings
+  methods: [GET]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\SettingsController::indexAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:settings'
+
+quince_block_settings_save:
+  path: quince/block/settings/save
+  methods: [POST]
+  defaults:
+    _controller: Quince\Block\Controller\Admin\SettingsController::saveAction
+    _legacy_controller: 'AdminQuinceBlock'
+    _legacy_link: 'AdminQuinceBlock:settingsSave'

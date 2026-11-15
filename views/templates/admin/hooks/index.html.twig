@@ -1,0 +1,149 @@
+{# Hooki `displayQuinceBlock*`: miejsca w motywie, w które trafiają bloki. #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% block quince_body %}
+<div class="qc-stack">
+
+    {# ── Nowy hook ── #}
+    <div class="qc-card">
+        <div class="qc-card-head">
+            <div>
+                <div class="qc-card-title">{{ 'New hook'|trans }}</div>
+                <div class="qc-card-desc">{{ 'A hook is a place in the theme. After creating it, put the code shown below in the theme template where the blocks should appear.'|trans }}</div>
+            </div>
+        </div>
+        <form method="post" action="{{ path('quince_block_hook_save') }}" x-data="{ suffix: '' }">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_hook_save') }}">
+            <div class="qc-card-body">
+                <div class="qc-form-grid qc-form-grid-3">
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-hook-suffix">{{ 'Name'|trans }}</label>
+                        <div class="qc-hstack" style="flex-wrap:nowrap; gap:6px">
+                            <span class="qb-code qc-muted">{{ prefix }}</span>
+                            <input type="text" id="qb-hook-suffix" name="suffix" required maxlength="40" pattern="[A-Za-z0-9_]+"
+                                   class="qc-field-base qc-focusable qb-code" x-model="suffix" spellcheck="false"
+                                   placeholder="{{ 'HomeBanner'|trans }}">
+                        </div>
+                        <div class="qc-hint">
+                            {{ 'Letters, digits and underscores.'|trans }}
+                            <span x-show="suffix" x-cloak>
+                                <span class="qb-code" x-text="'{hook h=\'{{ prefix }}' + suffix.charAt(0).toUpperCase() + suffix.slice(1) + '\'}'"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-hook-desc">{{ 'Description'|trans }}</label>
+                        <input type="text" id="qb-hook-desc" name="description" maxlength="255" class="qc-field-base qc-focusable"
+                               placeholder="{{ 'Where the hook is in the theme'|trans }}">
+                    </div>
+                    <div class="qc-field">
+                        <span class="qc-label">{{ 'Status'|trans }}</span>
+                        <label class="qc-toggle">
+                            <input type="hidden" name="active" value="0">
+                            <input type="checkbox" name="active" value="1" checked>
+                            <span class="qc-toggle-track"></span>
+                            <span class="qc-toggle-text">{{ 'Blocks are shown in it'|trans }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="qc-card-foot">
+                <button type="submit" class="qc-btn qc-btn-primary">{{ icons.icon('plus', 14) }} {{ 'Create hook'|trans }}</button>
+            </div>
+        </form>
+    </div>
+
+    {# Formularze akcji wiersza, wskazywane atrybutem `form`. #}
+    <form id="qb-hook-delete" method="post" action="{{ path('quince_block_hook_delete') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_hook_delete') }}">
+    </form>
+
+    {# ── Lista ── #}
+    <div class="qc-table-wrap">
+        <table class="qc-table">
+            <thead>
+                <tr>
+                    <th>{{ 'Hook'|trans }}</th>
+                    <th>{{ 'Description'|trans }}</th>
+                    <th class="qc-num">{{ 'Blocks'|trans }}</th>
+                    <th>{{ 'Status'|trans }}</th>
+                    <th style="width:90px"></th>
+                </tr>
+            </thead>
+            {% for hook in hooks %}
+                <tbody x-data="{ open: false }">
+                    <tr :class="open && 'qc-row-open'">
+                        <td><span class="qb-code">{{ hook.name }}</span></td>
+                        <td>{{ hook.description ?: '-' }}</td>
+                        <td class="qc-num">{{ hook.blocks }}</td>
+                        <td>
+                            <form method="post" action="{{ path('quince_block_hook_toggle') }}">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_hook_toggle') }}">
+                                <input type="hidden" name="id" value="{{ hook.id }}">
+                                <input type="hidden" name="active" value="0">
+                                <label class="qc-toggle qc-toggle-sm">
+                                    <input type="checkbox" name="active" value="1"{{ hook.active ? ' checked' }}
+                                           aria-label="{{ 'Blocks are shown in it'|trans }}" onchange="this.form.submit()">
+                                    <span class="qc-toggle-track"></span>
+                                </label>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="qc-row-actions" style="opacity:1">
+                                <button type="button" class="qc-icon-btn" @click="open = !open"
+                                        title="{{ 'Edit'|trans }}" aria-label="{{ 'Edit'|trans }}">{{ icons.icon('edit', 14) }}</button>
+                                <button type="submit" form="qb-hook-delete" name="id" value="{{ hook.id }}" class="qc-icon-btn qc-danger"
+                                        title="{{ 'Delete'|trans }}" aria-label="{{ 'Delete'|trans }}"
+                                        onclick="return confirm('{{ 'Delete this hook? Blocks assigned to it stop showing there.'|trans|e('js') }}')">
+                                    {{ icons.icon('trash', 14) }}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="qc-row-detail" x-show="open" x-cloak>
+                        <td colspan="5">
+                            <div class="qc-row-detail-box">
+                                <form method="post" action="{{ path('quince_block_hook_save') }}" class="qc-stack">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_hook_save') }}">
+                                    <input type="hidden" name="id" value="{{ hook.id }}">
+                                    <div class="qc-form-grid qc-form-grid-2">
+                                        <div class="qc-field">
+                                            <label class="qc-label" for="qb-hook-desc-{{ hook.id }}">{{ 'Description'|trans }}</label>
+                                            <input type="text" id="qb-hook-desc-{{ hook.id }}" name="description" maxlength="255"
+                                                   class="qc-field-base qc-focusable" value="{{ hook.description }}">
+                                        </div>
+                                        <div class="qc-field">
+                                            <span class="qc-label">{{ 'In the theme'|trans }}</span>
+                                            <input type="text" class="qc-field-base qc-focusable qb-code" readonly
+                                                   value="{hook h='{{ hook.name }}'}" @focus="$el.select()">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="active" value="{{ hook.active ? 1 : 0 }}">
+                                    <div class="qc-row-detail-actions" style="justify-content:flex-end">
+                                        <button type="button" class="qc-btn qc-btn-text qc-btn-sm" @click="open = false">{{ 'Cancel'|trans }}</button>
+                                        <button type="submit" class="qc-btn qc-btn-primary qc-btn-sm">{{ icons.icon('check', 14) }} {{ 'Save'|trans }}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            {% else %}
+                <tbody>
+                    <tr>
+                        <td colspan="5">
+                            <div class="qc-empty">
+                                <span class="qc-empty-icon">{{ icons.icon('link', 36) }}</span>
+                                <div class="qc-empty-text">{{ 'No hooks yet. Create one above, then assign blocks to it.'|trans }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

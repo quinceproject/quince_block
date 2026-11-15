@@ -1,0 +1,207 @@
+{# Reguły bloku. Formularz powstaje z definicji typów (RuleTypes::definitions()),
+   zapis i usuwanie idą przez JSON bez przeładowania strony, więc niezapisane
+   zmiany treści zostają w formularzu bloku. Dane: `#qb-rules-data`.
+   Pole wyboru z wyszukiwaniem: markup z `tree.szukajka` silnika. #}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+<div class="qc-card" x-data="quinceBlockRules()">
+    <div class="qc-card-head">
+        <div>
+            <div class="qc-card-title">{{ 'Rules'|trans }}</div>
+            <div class="qc-card-desc">{{ 'Include rules decide where the block shows, exclude rules hide it. With no include rule the block shows everywhere its hooks are.'|trans }}</div>
+        </div>
+        <button type="button" class="qc-btn qc-btn-outline" @click="start()" x-show="!editing">
+            {{ icons.icon('plus', 14) }} {{ 'Add rule'|trans }}
+        </button>
+    </div>
+
+    <div class="qc-card-body qc-stack">
+        <div class="qc-empty" x-show="!rules.length && !editing" x-cloak>
+            <span class="qc-empty-icon">{{ icons.icon('shield', 36) }}</span>
+            <div class="qc-empty-text">{{ 'No rules. The block shows on every page where its hooks are.'|trans }}</div>
+        </div>
+
+        <div class="qc-repeater" x-show="rules.length">
+            <template x-for="rule in rules" :key="rule.id">
+                <div class="qc-rep-row">
+                    <div class="qc-rep-row-head">
+                        <span class="qc-rep-name">
+                            <span x-text="rule.label"></span>
+                            <span class="qc-rep-sub" x-text="rule.summary"></span>
+                        </span>
+                        <span class="qc-badge" :class="rule.mode === 'exclude' ? 'qc-badge-danger' : 'qc-badge-success'"
+                              x-text="rule.mode === 'exclude' ? '{{ 'Exclude'|trans|e('js') }}' : '{{ 'Include'|trans|e('js') }}'"></span>
+                        <div class="qc-rep-actions">
+                            <button type="button" class="qc-icon-btn" @click="edit(rule)" :disabled="busy"
+                                    title="{{ 'Edit'|trans }}" aria-label="{{ 'Edit'|trans }}">{{ icons.icon('edit', 14) }}</button>
+                            <button type="button" class="qc-icon-btn qc-danger" @click="remove(rule)" :disabled="busy"
+                                    title="{{ 'Delete'|trans }}" aria-label="{{ 'Delete'|trans }}">{{ icons.icon('trash', 14) }}</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        {# ── Formularz reguły ── #}
+        <template x-if="editing">
+            <div class="qc-rep-row">
+                <div class="qc-rep-row-head">
+                    <span class="qc-rep-name" x-text="editing.id_rule ? '{{ 'Edit rule'|trans|e('js') }}' : '{{ 'New rule'|trans|e('js') }}'"></span>
+                </div>
+                <div class="qc-rep-body qc-stack" style="padding-top:16px">
+                    <div class="qc-form-grid qc-form-grid-2">
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-rule-type">{{ 'Rule type'|trans }}</label>
+                            <div class="qc-select-wrap">
+                                <select id="qb-rule-type" class="qc-field-base qc-select qc-focusable" x-model="editing.type" @change="resetValue()">
+                                    <template x-for="type in types" :key="type.type">
+                                        <option :value="type.type" x-text="type.label" :selected="type.type === editing.type"></option>
+                                    </template>
+                                </select>
+                                {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                            </div>
+                        </div>
+
+                        <div class="qc-field">
+                            <span class="qc-label">{{ 'Effect'|trans }}</span>
+                            <div class="qc-radio-group" role="radiogroup">
+                                <label class="qc-radio-opt" :class="editing.mode === 'include' && 'qc-selected'">
+                                    <input type="radio" value="include" x-model="editing.mode"> {{ 'Include: show when it matches'|trans }}
+                                </label>
+                                <label class="qc-radio-opt" :class="editing.mode === 'exclude' && 'qc-selected'">
+                                    <input type="radio" value="exclude" x-model="editing.mode"> {{ 'Exclude: hide when it matches'|trans }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qc-form-grid qc-form-grid-2">
+                        <template x-for="field in fields()" :key="editing.type + '-' + field.name">
+                            <div class="qc-field" style="position:relative" @click.outside="closeMenu(field)">
+                                <span class="qc-label" x-text="field.label + (field.required ? ' *' : '')"></span>
+
+                                {# Przełącznik #}
+                                <template x-if="field.kind === 'bool'">
+                                    <label class="qc-toggle">
+                                        <input type="checkbox" x-model="editing.value[field.name]" :aria-label="field.label">
+                                        <span class="qc-toggle-track"></span>
+                                    </label>
+                                </template>
+
+                                {# Liczba #}
+                                <template x-if="field.kind === 'number'">
+                                    <input type="number" step="0.01" min="0" class="qc-field-base qc-focusable" x-model="editing.value[field.name]">
+                                </template>
+
+                                {# Tekst #}
+                                <template x-if="field.kind === 'text' && !field.multiple">
+                                    <input type="text" maxlength="255" class="qc-field-base qc-focusable" x-model="editing.value[field.name]">
+                                </template>
+
+                                {# Lista słów (tagi): żetony w polu, Enter dodaje słowo #}
+                                <template x-if="field.kind === 'text' && field.multiple">
+                                    <div class="qc-tags" @click="$el.querySelector('input').focus()">
+                                        <template x-for="word in (editing.value[field.name] || [])" :key="word">
+                                            <span class="qc-tag">
+                                                <span x-text="word"></span>
+                                                <button type="button" class="qc-tag-x" @click.stop="dropValue(field, word)"
+                                                        :aria-label="'{{ 'Remove'|trans|e('js') }} ' + word">×</button>
+                                            </span>
+                                        </template>
+                                        <input type="text" class="qc-tags-input" :placeholder="texts.addTag"
+                                               @keydown.enter.prevent="addWord(field, $event.target)"
+                                               @keydown.comma.prevent="addWord(field, $event.target)"
+                                               @blur="addWord(field, $event.target)">
+                                    </div>
+                                </template>
+
+                                {# Numery obiektów sklepu: żetony z nazwami i wyszukiwanie #}
+                                <template x-if="field.kind === 'ids'">
+                                    <div>
+                                        <div class="qc-tags" @click="$el.querySelector('input').focus()">
+                                            <template x-for="id in (editing.value[field.name] || [])" :key="id">
+                                                <span class="qc-tag">
+                                                    <span x-text="nameOf(field.source, id)"></span>
+                                                    <span class="qc-tag-id" x-text="id"></span>
+                                                    <button type="button" class="qc-tag-x" @click.stop="dropValue(field, id)"
+                                                            :aria-label="'{{ 'Remove'|trans|e('js') }} ' + nameOf(field.source, id)">×</button>
+                                                </span>
+                                            </template>
+                                            <input type="search" class="qc-tags-input" :placeholder="texts.searchHint"
+                                                   x-model="ui(field).q" @focus="ui(field).open = true; search(field)"
+                                                   @input.debounce.250ms="search(field)">
+                                        </div>
+                                        <div class="qc-tags-menu" x-show="ui(field).open && ui(field).results.length" x-cloak>
+                                            <template x-for="item in ui(field).results" :key="item.id">
+                                                <div class="qc-tags-option" @click="pick(field, item)">
+                                                    <span class="qc-tags-name" x-text="item.name"></span>
+                                                    <span class="qc-tags-path" x-show="item.path" x-text="item.path"></span>
+                                                    <span class="qc-tags-id" x-text="'#' + item.id"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                {# Jeden obiekt sklepu z listy (cecha, wartość cechy) #}
+                                <template x-if="field.kind === 'choice' && field.source">
+                                    <div class="qc-select-wrap">
+                                        <select class="qc-field-base qc-select qc-focusable" x-model="editing.value[field.name]"
+                                                @change="field.source === 'feature' && loadFeatureValues()">
+                                            <option value="" x-text="field.required ? texts.choose : texts.any"></option>
+                                            <template x-for="item in sourceList(field.source)" :key="item.id">
+                                                <option :value="String(item.id)" x-text="item.name"
+                                                        :selected="String(item.id) === String(editing.value[field.name])"></option>
+                                            </template>
+                                        </select>
+                                        {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                                    </div>
+                                </template>
+
+                                {# Kilka wartości z listy: przełączniki #}
+                                <template x-if="field.kind === 'choice' && !field.source && field.multiple">
+                                    <div class="qc-hstack">
+                                        <template x-for="option in field.options" :key="option.value">
+                                            <label class="qc-toggle qc-toggle-sm">
+                                                <input type="checkbox" :value="option.value" x-model="editing.value[field.name]">
+                                                <span class="qc-toggle-track"></span>
+                                                <span class="qc-toggle-text" x-text="option.label"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                {# Jedna wartość z listy #}
+                                <template x-if="field.kind === 'choice' && !field.source && !field.multiple">
+                                    <div class="qc-select-wrap">
+                                        <select class="qc-field-base qc-select qc-focusable" x-model="editing.value[field.name]">
+                                            <option value="" x-text="texts.choose"></option>
+                                            <template x-for="option in field.options" :key="option.value">
+                                                <option :value="option.value" x-text="option.label"
+                                                        :selected="option.value === editing.value[field.name]"></option>
+                                            </template>
+                                        </select>
+                                        {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="qc-alert qc-alert-danger" x-show="error" x-cloak role="alert">
+                        <span x-text="error"></span>
+                    </div>
+
+                    <div class="qc-hstack" style="justify-content:flex-end">
+                        <button type="button" class="qc-btn qc-btn-text" @click="cancel()" :disabled="busy">{{ 'Cancel'|trans }}</button>
+                        <button type="button" class="qc-btn qc-btn-primary" @click="save()" :disabled="busy">
+                            <span class="qc-spinner" x-show="busy" x-cloak></span>
+                            {{ icons.icon('check', 14) }} {{ 'Save rule'|trans }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>

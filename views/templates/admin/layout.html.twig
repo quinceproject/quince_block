@@ -1,0 +1,102 @@
+{#
+  Layout panelu quince_block: powłoka z bocznym paskiem modułu.
+
+  Rozszerza natywny layout PrestaShopa, nie layout silnika: pasek silnika nie
+  jest w bloku i nie da się go podmienić. Arkusze qc-*, panel.js i Alpine biorą
+  się wprost z silnika (moduł bez niego się nie instaluje), markup powłoki
+  przepisany z quince_insight.
+
+  Ekran dostarcza bloki:
+    quince_body          treść ekranu
+    quince_actions       przyciski paska akcji (pusty = paska nie ma)
+    quince_actions_info  tekst po lewej stronie paska akcji
+    quince_scripts       skrypty ekranu; ładują się PO panel.js i admin.js,
+                         PRZED Alpine, więc mogą rejestrować komponenty
+    quince_nav_current   nazwa bieżącej strony na przycisku nawigacji telefonu
+
+  Zmienne od BlockBaseController::renderPanel():
+    nav, navKey, navTitle, qcVersion, multistore, contextLabel
+
+  Na `.qc-root`: `data-qb-csrf` (token panelu dla wywołań z JS) i `data-qb-i18n`
+  (teksty komunikatów skryptu).
+#}
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% set qcVer = '?v=' ~ (app.debug ? 'now'|date('U') : qcVersion|default('0.1.0')) %}
+{% set qcEngine = '../modules/quince_engine/views/' %}
+{% set qbAssets = '../modules/quince_block/views/' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/tokens/base.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/tokens/colors.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/tokens/typography.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/tokens/spacing.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/tokens/components.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qcEngine ~ 'css/panel.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset(qbAssets ~ 'css/admin.css') ~ qcVer }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset(qcEngine ~ 'js/panel.js') ~ qcVer }}" defer></script>
+    <script src="{{ asset(qbAssets ~ 'js/admin.js') ~ qcVer }}" defer></script>
+    {% block quince_scripts %}{% endblock %}
+    <script src="{{ asset(qcEngine ~ 'js/vendor/alpine.min.js') ~ qcVer }}" defer></script>
+{% endblock %}
+
+{% block content %}
+{% set qbI18n = {
+    'network': 'No connection to the shop. Check your network and try again.'|trans,
+    'denied': 'You do not have permission to do this, or the page has expired. Reload the page and try again.'|trans,
+    'failed': 'Something went wrong. Reload the page and try again.'|trans,
+    'confirmDelete': 'Remove it? This cannot be undone.'|trans
+} %}
+<div class="qc-root" data-qb-csrf="{{ csrf_token('quince_block_panel') }}" data-qb-i18n="{{ qbI18n|json_encode }}">
+    <div class="qc-shell">
+
+        <button type="button" class="qc-nav-mobile" aria-expanded="false" aria-controls="qc-sidenav">
+            <span class="qc-nav-label">{% block quince_nav_current %}{{ navTitle|default('Blocks')|trans }}{% endblock %}</span>
+            <svg class="qc-nav-mobile-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+        </button>
+
+        <nav class="qc-sidenav" id="qc-sidenav" aria-label="Quince Block">
+            {# Wielosklepowość: nad listą sklep albo grupa, których dotyczą zapisy. #}
+            {% if multistore|default(false) %}
+                <div class="qc-sidenav-section">{{ contextLabel }}</div>
+            {% endif %}
+
+            {% for item in nav|default([]) %}
+                <a href="{{ path(item.route) }}"
+                   class="qc-nav-item{{ navKey|default('') == item.key ? ' qc-active' : '' }}">
+                    {{ icons.icon(item.icon) }}
+                    <span class="qc-nav-label">{{ item.label|trans }}</span>
+                </a>
+            {% endfor %}
+        </nav>
+
+        <div class="qc-content">
+            {% block quince_intro %}{% endblock %}
+
+            {% block quince_body %}{% endblock %}
+
+            {% block quince_actionbar %}
+                {% set qcAkcje %}{% block quince_actions %}{% endblock %}{% endset %}
+                {% set qcAkcjeInfo %}{% block quince_actions_info %}{% endblock %}{% endset %}
+
+                {% if qcAkcje|trim is not empty or qcAkcjeInfo|trim is not empty %}
+                    <div class="qc-actionbar">
+                        <div class="qc-actionbar-info">{{ qcAkcjeInfo }}</div>
+                        {{ qcAkcje }}
+                    </div>
+                {% endif %}
+            {% endblock %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

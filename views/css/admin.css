@@ -1,0 +1,14 @@
+/* Quince Block: tylko to, czego nie ma w komponentach qc-* silnika. */
+
+/* Pola z kodem HTML, CSS i JS bloku oraz znaczniki placeholderów: pismo
+   o stałej szerokości, bo w treści bloku liczą się wcięcia i nawiasy. */
+.qc-root .qb-code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+.qc-root textarea.qb-code {
+    tab-size: 4;
+    white-space: pre;
+    overflow-x: auto;
+}

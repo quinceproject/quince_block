@@ -1,0 +1,323 @@
+{# Narzędzia: tester bloku, eksport i import JSON. #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% macro select(name, value, options, empty, id) %}
+    {% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+    <div class="qc-select-wrap">
+        <select id="{{ id }}" name="{{ name }}" class="qc-field-base qc-select qc-focusable">
+            {% if empty is not null %}<option value="">{{ empty }}</option>{% endif %}
+            {% for key, label in options %}
+                <option value="{{ key }}"{{ value ~ '' == key ~ '' ? ' selected' }}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+    </div>
+{% endmacro %}
+{% import _self as f %}
+
+{% block quince_body %}
+{% set verdicts = {
+    'match': {'class': 'qc-badge-success', 'label': 'Shown'|trans},
+    'no_match': {'class': 'qc-badge-danger', 'label': 'Hidden'|trans},
+    'unknown': {'class': 'qc-badge-warning', 'label': 'Depends on the visitor'|trans}
+} %}
+{% set ruleResults = {
+    'match': {'class': 'qc-badge-success', 'label': 'Matches'|trans},
+    'no_match': {'class': '', 'label': 'Does not match'|trans},
+    'unknown': {'class': 'qc-badge-warning', 'label': 'Not known'|trans}
+} %}
+{% set pageTypes = {
+    'index': 'Home page'|trans, 'category': 'Category'|trans, 'product': 'Product'|trans, 'cart': 'Cart'|trans,
+    'order': 'Checkout'|trans, 'cms': 'CMS page'|trans, 'search': 'Search results'|trans,
+    'manufacturer': 'Brand page'|trans, 'supplier': 'Supplier page'|trans, 'other': 'Other pages'|trans
+} %}
+
+<div class="qc-stack">
+
+    <div class="qc-form-grid qc-form-grid-3">
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'Blocks'|trans }}</div>
+            <div class="qc-stat">{{ counts.blocks }}</div>
+        </div></div>
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'Rules'|trans }}</div>
+            <div class="qc-stat">{{ counts.rules }}</div>
+        </div></div>
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'Hooks'|trans }}</div>
+            <div class="qc-stat">{{ counts.hooks }}</div>
+        </div></div>
+    </div>
+
+    {# ── Tester ── #}
+    <div class="qc-card">
+        <div class="qc-card-head">
+            <div>
+                <div class="qc-card-title">{{ 'Block tester'|trans }}</div>
+                <div class="qc-card-desc">{{ 'Checks whether a block shows on a given page and why, rule by rule, the same way the shop does. Rules about the signed in customer, the cart or the device cannot be checked here and are marked as not known.'|trans }}</div>
+            </div>
+        </div>
+        <form method="post" action="{{ path('quince_block_tools_test') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_tools_test') }}">
+            <div class="qc-card-body qc-stack">
+                <div class="qc-form-grid qc-form-grid-3">
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-block">{{ 'Block'|trans }}</label>
+                        <div class="qc-select-wrap">
+                            <select id="qb-t-block" name="id_block" class="qc-field-base qc-select qc-focusable">
+                                <option value="0">{{ 'All blocks (or all in the hook)'|trans }}</option>
+                                {% for b in blockChoices %}
+                                    <option value="{{ b.id }}"{{ input.id_block|default(0) ~ '' == b.id ~ '' ? ' selected' }}>#{{ b.id }} {{ b.title ?: 'Untitled block'|trans }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                        </div>
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-hook">{{ 'Hook'|trans }}</label>
+                        <div class="qc-select-wrap">
+                            <select id="qb-t-hook" name="id_hook" class="qc-field-base qc-select qc-focusable">
+                                <option value="0">{{ 'Any hook'|trans }}</option>
+                                {% for hook in hooks %}
+                                    <option value="{{ hook.id }}"{{ input.id_hook|default(0) ~ '' == hook.id ~ '' ? ' selected' }}>{{ hook.name }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                        </div>
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-page">{{ 'Page type'|trans }}</label>
+                        {{ f.select('page', input.page|default(''), pageTypes, 'From the product or category'|trans, 'qb-t-page') }}
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-product">{{ 'Product ID'|trans }}</label>
+                        <input type="number" min="0" id="qb-t-product" name="id_product" class="qc-field-base qc-focusable" value="{{ input.id_product|default('') }}">
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-category">{{ 'Category ID (listing)'|trans }}</label>
+                        <input type="number" min="0" id="qb-t-category" name="id_category" class="qc-field-base qc-focusable" value="{{ input.id_category|default('') }}">
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-manufacturer">{{ 'Brand ID (brand page)'|trans }}</label>
+                        <input type="number" min="0" id="qb-t-manufacturer" name="id_manufacturer" class="qc-field-base qc-focusable" value="{{ input.id_manufacturer|default('') }}">
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-supplier">{{ 'Supplier ID (supplier page)'|trans }}</label>
+                        <input type="number" min="0" id="qb-t-supplier" name="id_supplier" class="qc-field-base qc-focusable" value="{{ input.id_supplier|default('') }}">
+                    </div>
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-when">{{ 'Date and time'|trans }}</label>
+                        <input type="datetime-local" id="qb-t-when" name="datetime" class="qc-field-base qc-focusable" value="{{ input.datetime|default('') }}">
+                        <div class="qc-hint">{{ 'Empty means now.'|trans }}</div>
+                    </div>
+                    {% if shops|length > 1 %}
+                        <div class="qc-field">
+                            <label class="qc-label" for="qb-t-shop">{{ 'Shop'|trans }}</label>
+                            <div class="qc-select-wrap">
+                                <select id="qb-t-shop" name="id_shop" class="qc-field-base qc-select qc-focusable">
+                                    {% for s in shops %}
+                                        <option value="{{ s.id }}"{{ input.id_shop ~ '' == s.id ~ '' ? ' selected' }}>{{ s.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <input type="hidden" name="id_shop" value="{{ input.id_shop }}">
+                    {% endif %}
+                    <div class="qc-field">
+                        <label class="qc-label" for="qb-t-lang">{{ 'Language'|trans }}</label>
+                        <div class="qc-select-wrap">
+                            <select id="qb-t-lang" name="id_lang" class="qc-field-base qc-select qc-focusable">
+                                {% for l in languages %}
+                                    <option value="{{ l.id_lang }}"{{ input.id_lang ~ '' == l.id_lang ~ '' ? ' selected' }}>{{ l.name }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                        </div>
+                    </div>
+                </div>
+
+                {# Odwiedzający: zwinięte, bo potrzebne tylko przy regułach o kliencie i koszyku. #}
+                <div class="qc-section" x-data="{ open: false }" :class="open && 'qc-open'">
+                    <div class="qc-section-head" @click="open = !open">
+                        <span class="qc-section-title">{{ 'Visitor'|trans }}</span>
+                        {{ icons.icon('chevronDown', 16, 'qc-section-chevron') }}
+                    </div>
+                    <div class="qc-section-body" style="padding-left:14px">
+                        <div class="qc-form-grid qc-form-grid-3">
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-country">{{ 'Country'|trans }}</label>
+                                <div class="qc-select-wrap">
+                                    <select id="qb-t-country" name="id_country" class="qc-field-base qc-select qc-focusable">
+                                        <option value="0">{{ 'Not given'|trans }}</option>
+                                        {% for c in countries %}
+                                            <option value="{{ c.id }}"{{ input.id_country|default(0) ~ '' == c.id ~ '' ? ' selected' }}>{{ c.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                                </div>
+                            </div>
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-currency">{{ 'Currency'|trans }}</label>
+                                <div class="qc-select-wrap">
+                                    <select id="qb-t-currency" name="id_currency" class="qc-field-base qc-select qc-focusable">
+                                        <option value="0">{{ 'Shop default'|trans }}</option>
+                                        {% for c in currencies %}
+                                            <option value="{{ c.id }}"{{ input.id_currency|default(0) ~ '' == c.id ~ '' ? ' selected' }}>{{ c.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                                </div>
+                            </div>
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-search">{{ 'Search phrase'|trans }}</label>
+                                <input type="text" id="qb-t-search" name="search" class="qc-field-base qc-focusable" value="{{ input.search|default('') }}">
+                            </div>
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-url">{{ 'Page address'|trans }}</label>
+                                <input type="text" id="qb-t-url" name="url" class="qc-field-base qc-focusable" value="{{ input.url|default('') }}">
+                            </div>
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-utm">{{ 'UTM parameter'|trans }}</label>
+                                {{ f.select('utm_param', input.utm_param|default(''), {'source': 'utm_source', 'medium': 'utm_medium', 'campaign': 'utm_campaign', 'term': 'utm_term', 'content': 'utm_content'}, 'Not given'|trans, 'qb-t-utm') }}
+                            </div>
+                            <div class="qc-field">
+                                <label class="qc-label" for="qb-t-utm-value">{{ 'UTM value'|trans }}</label>
+                                <input type="text" id="qb-t-utm-value" name="utm_value" class="qc-field-base qc-focusable" value="{{ input.utm_value|default('') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="qc-card-foot">
+                <button type="submit" class="qc-btn qc-btn-primary">{{ icons.icon('search', 14) }} {{ 'Run the test'|trans }}</button>
+            </div>
+        </form>
+    </div>
+
+    {# ── Wynik testu ── #}
+    {% if result %}
+        {% if result.facts %}
+            <div class="qc-note">
+                {% for fact in result.facts %}<strong>{{ fact.label }}:</strong> {{ fact.value }}{{ loop.last ? '' : ' · ' }}{% endfor %}
+            </div>
+        {% endif %}
+
+        {% for b in result.blocks %}
+            <div class="qc-card">
+                <div class="qc-card-head">
+                    <div>
+                        <div class="qc-card-title">
+                            <a href="{{ path('quince_block_block_edit', {'id': b.id}) }}">#{{ b.id }} {{ b.title ?: 'Untitled block'|trans }}</a>
+                        </div>
+                        <div class="qc-card-desc">{{ b.logic == 'or' ? 'Any include rule matches'|trans : 'All include rules match'|trans }}</div>
+                    </div>
+                    <span class="qc-badge {{ verdicts[b.verdict].class }}">{{ verdicts[b.verdict].label }}</span>
+                </div>
+                <div class="qc-card-body qc-stack">
+                    <div class="qc-hstack">
+                        {% for check in b.checks %}
+                            <span class="qc-badge {{ check.ok ? 'qc-badge-success' : 'qc-badge-danger' }}">
+                                {{ icons.icon(check.ok ? 'check' : 'x', 12) }} {{ check.label }}
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    {% if b.rules %}
+                        <div class="qc-table-wrap">
+                            <table class="qc-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ 'Rule'|trans }}</th>
+                                        <th>{{ 'Effect'|trans }}</th>
+                                        <th>{{ 'Result'|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rule in b.rules %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ rule.label }}</strong>
+                                                {% if rule.summary %}<div class="qc-muted">{{ rule.summary }}</div>{% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="qc-badge {{ rule.mode == 'exclude' ? 'qc-badge-danger' : 'qc-badge-success' }}">
+                                                    {{ rule.mode == 'exclude' ? 'Exclude'|trans : 'Include'|trans }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="qc-badge {{ ruleResults[rule.result].class }}">{{ ruleResults[rule.result].label }}</span>
+                                                {% if rule.note %}<div class="qc-muted">{{ rule.note }}</div>{% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="qc-muted">{{ 'No rules: the block is not limited by rules.'|trans }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="qc-alert qc-alert-info">{{ 'No block to test for these settings.'|trans }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {# ── Eksport i import ── #}
+    <div class="qc-form-grid qc-form-grid-2">
+        <div class="qc-tool-card">
+            <div class="qc-tool-card-icon">{{ icons.icon('file', 18) }}</div>
+            <div class="qc-tool-card-title">{{ 'Export'|trans }}</div>
+            <div class="qc-tool-card-desc">{{ 'Downloads all blocks with their content in every shop and language, hooks and rules as a JSON file. Statistics and history are not included.'|trans }}</div>
+            <form method="post" action="{{ path('quince_block_tools_export') }}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_tools_export') }}">
+                <button type="submit" class="qc-btn qc-btn-outline">{{ icons.icon('file', 14) }} {{ 'Download JSON'|trans }}</button>
+            </form>
+        </div>
+
+        <div class="qc-tool-card">
+            <div class="qc-tool-card-icon">{{ icons.icon('upload', 18) }}</div>
+            <div class="qc-tool-card-title">{{ 'Import'|trans }}</div>
+            <div class="qc-tool-card-desc">{{ 'Adds blocks from a file exported here. The whole file is checked first and saved at once: if anything is wrong, nothing changes. Hooks are matched by name and created when missing.'|trans }}</div>
+
+            <form method="post" action="{{ path('quince_block_tools_import') }}" enctype="multipart/form-data"
+                  x-data="{ nazwaPliku: '', zastap: false }" class="qc-stack" style="align-self:stretch; display:block">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_tools_import') }}">
+                <div class="qc-upload">
+                    <span class="qc-upload-thumb">{{ icons.icon('upload', 18) }}</span>
+
+                    <div class="qc-upload-info">
+                        <div class="qc-upload-name" x-text="nazwaPliku || '{{ 'No file chosen'|trans|e('js') }}'"></div>
+                        <div>{{ 'A .json file from the export above.'|trans }}</div>
+                    </div>
+
+                    <div class="qc-upload-actions">
+                        <button type="button" class="qc-btn qc-btn-outline" @click="$refs.plik.click()">
+                            {{ icons.icon('upload', 14) }} {{ 'Choose a file'|trans }}
+                        </button>
+                        <button type="submit" class="qc-btn qc-btn-outline" x-show="nazwaPliku" x-cloak
+                                @click="if (zastap && !confirm('{{ 'All current blocks, their rules and statistics will be deleted first. Continue?'|trans|e('js') }}')) $event.preventDefault()">
+                            {{ icons.icon('check', 14) }} {{ 'Import'|trans }}
+                        </button>
+                    </div>
+
+                    <input type="file" x-ref="plik" hidden name="import_file" accept=".json,application/json"
+                           @change="nazwaPliku = $event.target.files.length ? $event.target.files[0].name : ''">
+                </div>
+
+                <label class="qc-toggle">
+                    <input type="hidden" name="replace" value="0">
+                    <input type="checkbox" name="replace" value="1" x-model="zastap">
+                    <span class="qc-toggle-track"></span>
+                    <span class="qc-toggle-text">{{ 'Delete all current blocks before importing'|trans }}</span>
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

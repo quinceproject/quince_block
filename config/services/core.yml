@@ -1,0 +1,13 @@
+# Usługi części frontu quince_block, wpisane jawnie (bez skanowania `src/`).
+#
+# Front tworzy swoje klasy sam (FrontRenderer potrzebuje instancji modułu),
+# więc w kontenerze jest tylko to, czego panel może chcieć wstrzyknąć.
+# RuleTypes, Placeholders i BlockCache mają metody statyczne.
+
+services:
+  _defaults:
+    public: true
+    autowire: true
+    autoconfigure: true
+
+  Quince\Block\Storage\BlockReader: ~

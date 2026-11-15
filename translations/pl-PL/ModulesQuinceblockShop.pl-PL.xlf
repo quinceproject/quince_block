@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" target-language="pl-PL" datatype="plaintext" original="ModulesQuinceblockShop">
+    <body>
+
+      <trans-unit id="quince.block.this_preview_link_is_not_valid">
+        <source>This preview link is not valid.</source>
+        <target>Ten link podglądu jest nieprawidłowy.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.block_preview">
+        <source>Block preview</source>
+        <target>Podgląd bloku</target>
+      </trans-unit>
+      <trans-unit id="quince.block.preview_of_the_block_title_visitors">
+        <source>Preview of the block "%title%". Visitors do not see this page.</source>
+        <target>Podgląd bloku „%title%”. Odwiedzający nie widzą tej strony.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.variant_a">
+        <source>Variant A</source>
+        <target>Wariant A</target>
+      </trans-unit>
+      <trans-unit id="quince.block.variant_b">
+        <source>Variant B</source>
+        <target>Wariant B</target>
+      </trans-unit>
+      <trans-unit id="quince.block.in_stock">
+        <source>In stock</source>
+        <target>Dostępny</target>
+      </trans-unit>
+      <trans-unit id="quince.block.out_of_stock">
+        <source>Out of stock</source>
+        <target>Niedostępny</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>

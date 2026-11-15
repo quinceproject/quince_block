@@ -1,0 +1,63 @@
+{# Ustawienia modułu per sklep (ConfigStore silnika). #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% block quince_actions_info %}
+    {% if multistore %}{{ 'Saved for: %shops%'|trans({'%shops%': shopNames|join(', ')}) }}{% endif %}
+{% endblock %}
+
+{% block quince_actions %}
+    <button type="submit" form="qb-settings" class="qc-btn qc-btn-primary">
+        {{ icons.icon('check', 14) }} {{ 'Save changes'|trans }}
+    </button>
+{% endblock %}
+
+{% block quince_body %}
+<form id="qb-settings" method="post" action="{{ path('quince_block_settings_save') }}" class="qc-stack">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_settings_save') }}">
+
+    <div class="qc-card">
+        <div class="qc-card-head">
+            <div>
+                <div class="qc-card-title">{{ 'Blocks in the shop'|trans }}</div>
+            </div>
+        </div>
+        <div class="qc-card-body">
+            <div class="qc-form-grid qc-form-grid-2">
+                <div class="qc-field">
+                    <span class="qc-label">{{ 'Refresh after cart changes'|trans }}</span>
+                    <label class="qc-toggle">
+                        <input type="hidden" name="refresh" value="0">
+                        <input type="checkbox" name="refresh" value="1"{{ refresh ? ' checked' }}>
+                        <span class="qc-toggle-track"></span>
+                        <span class="qc-toggle-text">{{ 'Reload blocks that have refreshing switched on'|trans }}</span>
+                    </label>
+                    <div class="qc-hint">{{ 'When off, no block is reloaded after adding to the cart, whatever its own setting.'|trans }}</div>
+                </div>
+
+                <div class="qc-field">
+                    <label class="qc-label" for="qb-low-stock">{{ 'Low stock threshold'|trans }}</label>
+                    <input type="number" id="qb-low-stock" name="low_stock" min="1" step="1"
+                           class="qc-field-base qc-focusable" value="{{ lowStock }}">
+                    <div class="qc-hint">{{ 'Content between {{#if_low_stock}} and {{/if_low_stock}} shows when the product is in stock, at or below this quantity.'|trans }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="qc-card">
+        <div class="qc-card-head">
+            <div>
+                <div class="qc-card-title">{{ 'Custom CSS'|trans }}</div>
+                <div class="qc-card-desc">{{ 'Styles for your blocks, added to every page of the shop. It is kept in the shop settings, so module updates do not overwrite it.'|trans }}</div>
+            </div>
+        </div>
+        <div class="qc-card-body">
+            <textarea name="custom_css" rows="16" class="qc-field-base qc-focusable qb-code" spellcheck="false"
+                      aria-label="{{ 'Custom CSS'|trans }}">{{ customCss }}</textarea>
+        </div>
+    </div>
+</form>
+{% endblock %}

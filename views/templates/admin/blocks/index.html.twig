@@ -1,0 +1,194 @@
+{# Lista bloków: wyszukiwanie, filtr statusu, akcje zbiorcze, stronicowanie.
+   Układ listy przeniesiony z quince_blog (posts.html.twig). #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% block quince_actions %}
+    <a class="qc-btn qc-btn-primary" href="{{ path('quince_block_block_edit', {'id': 0}) }}">
+        {{ icons.icon('plus', 14) }} {{ 'New block'|trans }}
+    </a>
+{% endblock %}
+
+{% block quince_body %}
+<div class="qc-stack" x-data="{ zaznaczone: [], get ile() { return this.zaznaczone.length }, calaStrona: false,
+    przelaczStrone(v) { this.calaStrona = v; this.zaznaczone = v ? {{ rows|map(r => r.id ~ '')|json_encode }} : []; } }">
+
+    {# ── Filtr ── #}
+    <div class="qc-card">
+        <div class="qc-card-body">
+            <form method="get" action="{{ path('quince_block_blocks') }}" style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end">
+                <div class="qc-field" style="max-inline-size:280px; margin:0">
+                    <label class="qc-label" for="qb-search">{{ 'Title'|trans }}</label>
+                    <input type="search" class="qc-field-base qc-focusable" id="qb-search" name="q"
+                           value="{{ query }}" placeholder="{{ 'Search by title or ID...'|trans }}">
+                </div>
+                <div class="qc-field" style="max-inline-size:180px; margin:0">
+                    <label class="qc-label" for="qb-status">{{ 'Status'|trans }}</label>
+                    <div class="qc-select-wrap">
+                        <select id="qb-status" name="status" class="qc-field-base qc-select qc-focusable" onchange="this.form.submit()">
+                            <option value="">{{ 'All statuses'|trans }}</option>
+                            <option value="active" {{ status == 'active' ? 'selected' }}>{{ 'Active'|trans }}</option>
+                            <option value="inactive" {{ status == 'inactive' ? 'selected' }}>{{ 'Inactive'|trans }}</option>
+                        </select>
+                        {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                    </div>
+                </div>
+                <button type="submit" class="qc-btn qc-btn-outline">{{ icons.icon('search', 14) }} {{ 'Filter'|trans }}</button>
+                {% if query or status %}
+                    <a class="qc-btn qc-btn-text" href="{{ path('quince_block_blocks') }}">{{ 'Clear'|trans }}</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    {# Formularze akcji wiersza. Przyciski w tabeli wskazują je atrybutem `form`,
+       bo tabela stoi już w formularzu akcji zbiorczych. #}
+    <form id="qb-row-duplicate" method="post" action="{{ path('quince_block_block_duplicate') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_duplicate') }}">
+    </form>
+    <form id="qb-row-delete" method="post" action="{{ path('quince_block_block_delete') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_delete') }}">
+    </form>
+
+    {# ── Wiersze ── #}
+    <form method="post" action="{{ path('quince_block_block_bulk') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_block_block_bulk') }}">
+        <div class="qc-table-wrap">
+
+            <div class="qc-bulk-bar" x-show="ile > 0" x-cloak>
+                <span><span x-text="ile"></span> {{ 'selected'|trans }}</span>
+                <button type="submit" name="bulk_action" value="enable" class="qc-btn qc-btn-text qc-btn-sm">{{ 'Turn on'|trans }}</button>
+                <button type="submit" name="bulk_action" value="disable" class="qc-btn qc-btn-text qc-btn-sm">{{ 'Turn off'|trans }}</button>
+                <button type="submit" name="bulk_action" value="delete" class="qc-btn qc-btn-outline qc-btn-sm"
+                        onclick="return confirm('{{ 'Delete the selected blocks with their rules and statistics?'|trans|e('js') }}')">
+                    {{ icons.icon('trash', 14) }} {{ 'Delete selected'|trans }}
+                </button>
+                <button type="button" class="qc-btn qc-btn-text qc-btn-sm" @click="przelaczStrone(false)">{{ 'Cancel'|trans }}</button>
+            </div>
+
+            <table class="qc-table">
+                <thead>
+                    <tr>
+                        <th style="width:34px">
+                            <input type="checkbox" class="qc-checkbox" aria-label="{{ 'Select all rows on this page'|trans }}"
+                                   :checked="calaStrona" @change="przelaczStrone($event.target.checked)">
+                        </th>
+                        <th style="width:60px">{{ 'ID'|trans }}</th>
+                        <th>{{ 'Title'|trans }}</th>
+                        <th>{{ 'Hooks'|trans }}</th>
+                        {% if multistore %}<th>{{ 'Shops'|trans }}</th>{% endif %}
+                        <th class="qc-num">{{ 'Position'|trans }}</th>
+                        <th>{{ 'Schedule'|trans }}</th>
+                        <th>{{ 'Status'|trans }}</th>
+                        <th style="width:110px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="qc-checkbox" name="ids[]" value="{{ row.id }}" x-model="zaznaczone">
+                            </td>
+                            <td class="qc-muted">{{ row.id }}</td>
+                            <td>
+                                <a href="{{ path('quince_block_block_edit', {'id': row.id}) }}"><strong>{{ row.title ?: 'Untitled block'|trans }}</strong></a>
+                                <div class="qc-muted">
+                                    {{ row.logic == 'or' ? 'Any rule matches'|trans : 'All rules match'|trans }}
+                                    {% if row.ab %} · {{ 'A/B test'|trans }}{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% for hook in row.hooks %}
+                                    <span class="qc-badge">{{ hook }}</span>
+                                {% else %}
+                                    <span class="qc-muted">{{ 'No hook'|trans }}</span>
+                                {% endfor %}
+                            </td>
+                            {% if multistore %}
+                                <td>
+                                    {% for shop in row.shops %}
+                                        <span class="qc-badge">{{ shop }}</span>
+                                    {% else %}
+                                        <span class="qc-muted">{{ 'No shop'|trans }}</span>
+                                    {% endfor %}
+                                </td>
+                            {% endif %}
+                            <td class="qc-num">{{ row.position }}</td>
+                            <td>
+                                {% if row.date_from or row.date_to %}
+                                    {{ row.date_from ?: '…' }} &rarr; {{ row.date_to ?: '…' }}
+                                {% else %}
+                                    <span class="qc-muted">{{ 'Always'|trans }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <label class="qc-toggle qc-toggle-sm">
+                                    <input type="checkbox" {{ row.active ? 'checked' }}
+                                           aria-label="{{ 'Block switched on'|trans }}"
+                                           @change="QB.toggle('{{ path('quince_block_block_toggle')|e('js') }}', {id: {{ row.id }}, active: $event.target.checked}, $event.target)">
+                                    <span class="qc-toggle-track"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="qc-row-actions" style="opacity:1">
+                                    <a class="qc-icon-btn" href="{{ path('quince_block_block_edit', {'id': row.id}) }}"
+                                       title="{{ 'Edit'|trans }}" aria-label="{{ 'Edit'|trans }}">{{ icons.icon('edit', 14) }}</a>
+                                    <button type="submit" form="qb-row-duplicate" name="id" value="{{ row.id }}" class="qc-icon-btn"
+                                            title="{{ 'Duplicate'|trans }}" aria-label="{{ 'Duplicate'|trans }}">{{ icons.icon('file', 14) }}</button>
+                                    <button type="submit" form="qb-row-delete" name="id" value="{{ row.id }}" class="qc-icon-btn qc-danger"
+                                            title="{{ 'Delete'|trans }}" aria-label="{{ 'Delete'|trans }}"
+                                            onclick="return confirm('{{ 'Delete this block with its rules and statistics?'|trans|e('js') }}')">
+                                        {{ icons.icon('trash', 14) }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="{{ multistore ? 9 : 8 }}">
+                                <div class="qc-empty">
+                                    <span class="qc-empty-icon">{{ icons.icon('layout', 36) }}</span>
+                                    <div class="qc-empty-text">
+                                        {% if anyBlock %}
+                                            {{ 'No block matches the filter.'|trans }}
+                                        {% else %}
+                                            {{ 'No blocks yet. Create the first one and assign it to a hook.'|trans }}
+                                        {% endif %}
+                                    </div>
+                                    {% if anyBlock %}
+                                        <a class="qc-btn qc-btn-outline qc-btn-sm" href="{{ path('quince_block_blocks') }}">{{ 'Clear the filter'|trans }}</a>
+                                    {% else %}
+                                        <a class="qc-btn qc-btn-outline qc-btn-sm" href="{{ path('quince_block_block_edit', {'id': 0}) }}">{{ icons.icon('plus', 14) }} {{ 'Create the first block'|trans }}</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if pages > 1 %}
+                <div class="qc-table-foot">
+                    <span>{{ 'Page %page% of %pages%, %total% blocks'|trans({'%page%': page, '%pages%': pages, '%total%': total}) }}</span>
+                    <div class="qc-pagination">
+                        {% if page > 1 %}
+                            <a class="qc-page-btn" href="{{ path('quince_block_blocks', filters|merge({'page': page - 1})) }}">‹</a>
+                        {% endif %}
+                        {% for numer in max(1, page - 2)..min(pages, page + 2) %}
+                            <a class="qc-page-btn{{ numer == page ? ' qc-active' : '' }}"
+                               href="{{ path('quince_block_blocks', filters|merge({'page': numer})) }}">{{ numer }}</a>
+                        {% endfor %}
+                        {% if page < pages %}
+                            <a class="qc-page-btn" href="{{ path('quince_block_blocks', filters|merge({'page': page + 1})) }}">›</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="qc-table-foot"><span>{{ '%total% blocks'|trans({'%total%': total}) }}</span></div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

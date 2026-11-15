@@ -1,0 +1,79 @@
+{# Statystyki: wyświetlenia, kliknięcia i CTR per blok i wariant w zakresie dni. #}
+{% extends '@Modules/quince_block/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_engine/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quinceblock.Admin' %}
+
+{% block quince_body %}
+<div class="qc-stack">
+    <p class="qc-lede">{{ 'Views and clicks are counted only for visitors who agreed to statistics, so the numbers are lower than the real traffic.'|trans }}</p>
+
+    <div class="qc-card">
+        <div class="qc-card-body">
+            <form method="get" action="{{ path('quince_block_stats') }}" style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end">
+                <div class="qc-field" style="max-inline-size:200px; margin:0">
+                    <label class="qc-label" for="qb-from">{{ 'From'|trans }}</label>
+                    <input type="date" id="qb-from" name="from" class="qc-field-base qc-focusable" value="{{ from }}">
+                </div>
+                <div class="qc-field" style="max-inline-size:200px; margin:0">
+                    <label class="qc-label" for="qb-to">{{ 'To'|trans }}</label>
+                    <input type="date" id="qb-to" name="to" class="qc-field-base qc-focusable" value="{{ to }}">
+                </div>
+                <button type="submit" class="qc-btn qc-btn-outline">{{ icons.icon('search', 14) }} {{ 'Show'|trans }}</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="qc-form-grid qc-form-grid-3">
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'Views'|trans }}</div>
+            <div class="qc-stat">{{ totals.views }}</div>
+        </div></div>
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'Clicks'|trans }}</div>
+            <div class="qc-stat">{{ totals.clicks }}</div>
+        </div></div>
+        <div class="qc-card"><div class="qc-card-body">
+            <div class="qc-card-desc">{{ 'CTR'|trans }}</div>
+            <div class="qc-stat">{{ totals.ctr|number_format(2) }}%</div>
+        </div></div>
+    </div>
+
+    <div class="qc-table-wrap">
+        <table class="qc-table">
+            <thead>
+                <tr>
+                    <th>{{ 'Block'|trans }}</th>
+                    <th>{{ 'Variant'|trans }}</th>
+                    <th class="qc-num">{{ 'Views'|trans }}</th>
+                    <th class="qc-num">{{ 'Clicks'|trans }}</th>
+                    <th class="qc-num">{{ 'CTR'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('quince_block_block_edit', {'id': row.id_block}) }}"><strong>{{ row.title ?: 'Untitled block'|trans }}</strong></a>
+                            <div class="qc-muted">#{{ row.id_block }}</div>
+                        </td>
+                        <td>{{ row.variant|upper }}</td>
+                        <td class="qc-num">{{ row.views }}</td>
+                        <td class="qc-num">{{ row.clicks }}</td>
+                        <td class="qc-num">{{ row.ctr|number_format(2) }}%</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="qc-empty">
+                                <span class="qc-empty-icon">{{ icons.icon('eye', 36) }}</span>
+                                <div class="qc-empty-text">{{ 'No views in this period.'|trans }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

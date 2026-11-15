@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" target-language="pl-PL" datatype="plaintext" original="ModulesQuinceblockAdmin">
+    <body>
+
+      <trans-unit id="quince.block.rules">
+        <source>Rules</source>
+        <target>Reguły</target>
+      </trans-unit>
+      <trans-unit id="quince.block.include_rules_decide_where_the_block">
+        <source>Include rules decide where the block shows, exclude rules hide it. With no include rule the block shows everywhere its hooks are.</source>
+        <target>Reguły uwzględniające decydują, gdzie blok się pokazuje, a wykluczające go ukrywają. Bez reguły uwzględniającej blok pokazuje się wszędzie tam, gdzie są jego hooki.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.add_rule">
+        <source>Add rule</source>
+        <target>Dodaj regułę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_rules_the_block_shows_on">
+        <source>No rules. The block shows on every page where its hooks are.</source>
+        <target>Brak reguł. Blok pokazuje się na każdej stronie, na której są jego hooki.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.exclude">
+        <source>Exclude</source>
+        <target>Wyklucz</target>
+      </trans-unit>
+      <trans-unit id="quince.block.include">
+        <source>Include</source>
+        <target>Uwzględnij</target>
+      </trans-unit>
+      <trans-unit id="quince.block.edit">
+        <source>Edit</source>
+        <target>Edytuj</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete">
+        <source>Delete</source>
+        <target>Usuń</target>
+      </trans-unit>
+      <trans-unit id="quince.block.edit_rule">
+        <source>Edit rule</source>
+        <target>Edytuj regułę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.new_rule">
+        <source>New rule</source>
+        <target>Nowa reguła</target>
+      </trans-unit>
+      <trans-unit id="quince.block.rule_type">
+        <source>Rule type</source>
+        <target>Typ reguły</target>
+      </trans-unit>
+      <trans-unit id="quince.block.effect">
+        <source>Effect</source>
+        <target>Działanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.include_show_when_it_matches">
+        <source>Include: show when it matches</source>
+        <target>Uwzględnij: pokaż, gdy pasuje</target>
+      </trans-unit>
+      <trans-unit id="quince.block.exclude_hide_when_it_matches">
+        <source>Exclude: hide when it matches</source>
+        <target>Wyklucz: ukryj, gdy pasuje</target>
+      </trans-unit>
+      <trans-unit id="quince.block.remove">
+        <source>Remove</source>
+        <target>Usuń</target>
+      </trans-unit>
+      <trans-unit id="quince.block.cancel">
+        <source>Cancel</source>
+        <target>Anuluj</target>
+      </trans-unit>
+      <trans-unit id="quince.block.save_rule">
+        <source>Save rule</source>
+        <target>Zapisz regułę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.last_saved_date">
+        <source>Last saved: %date%</source>
+        <target>Ostatni zapis: %date%</target>
+      </trans-unit>
+      <trans-unit id="quince.block.back_to_the_list">
+        <source>Back to the list</source>
+        <target>Wróć do listy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.save_changes">
+        <source>Save changes</source>
+        <target>Zapisz zmiany</target>
+      </trans-unit>
+      <trans-unit id="quince.block.create_block">
+        <source>Create block</source>
+        <target>Utwórz blok</target>
+      </trans-unit>
+      <trans-unit id="quince.block.remove_this_rule">
+        <source>Remove this rule?</source>
+        <target>Usunąć tę regułę?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.type_to_search">
+        <source>Type to search...</source>
+        <target>Wpisz, aby wyszukać...</target>
+      </trans-unit>
+      <trans-unit id="quince.block.nothing_found">
+        <source>Nothing found.</source>
+        <target>Nic nie znaleziono.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.choose">
+        <source>(choose)</source>
+        <target>(wybierz)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.any">
+        <source>(any)</source>
+        <target>(dowolne)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.type_a_word_and_press_enter">
+        <source>Type a word and press Enter</source>
+        <target>Wpisz słowo i naciśnij Enter</target>
+      </trans-unit>
+      <trans-unit id="quince.block.title">
+        <source>Title</source>
+        <target>Tytuł</target>
+      </trans-unit>
+      <trans-unit id="quince.block.seen_only_in_the_back_office">
+        <source>Seen only in the back office</source>
+        <target>Widoczny tylko w panelu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.helps_you_find_the_block_in">
+        <source>Helps you find the block in this panel. Visitors do not see it.</source>
+        <target>Pomaga znaleźć blok w tym panelu. Odwiedzający go nie widzą.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.status">
+        <source>Status</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shown_in_the_shop">
+        <source>Shown in the shop</source>
+        <target>Widoczny w sklepie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.content">
+        <source>Content</source>
+        <target>Treść</target>
+      </trans-unit>
+      <trans-unit id="quince.block.display">
+        <source>Display</source>
+        <target>Wyświetlanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_b_test">
+        <source>A/B test</source>
+        <target>Test A/B</target>
+      </trans-unit>
+      <trans-unit id="quince.block.history">
+        <source>History</source>
+        <target>Historia</target>
+      </trans-unit>
+      <trans-unit id="quince.block.html_of_the_block_separately_for">
+        <source>HTML of the block, separately for each shop and language.</source>
+        <target>Kod HTML bloku, osobno dla każdego sklepu i języka.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shop">
+        <source>Shop</source>
+        <target>Sklep</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_content">
+        <source>no content</source>
+        <target>brak treści</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shown_in_the_hooks_the_block">
+        <source>Shown in the hooks the block is assigned to. Placeholders below are replaced with shop data.</source>
+        <target>Wyświetlana w hookach, do których przypisano blok. Znaczniki poniżej są zastępowane danymi sklepu.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.variant_b_content">
+        <source>Variant B content</source>
+        <target>Treść wariantu B</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shown_to_half_of_the_visitors">
+        <source>Shown to half of the visitors while the A/B test is on.</source>
+        <target>Widzi ją połowa odwiedzających, gdy test A/B jest włączony.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.code_in_the_page_head">
+        <source>Code in the page head</source>
+        <target>Kod w nagłówku strony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.added_to_head_on_pages_where">
+        <source>Added to &lt;head&gt; on pages where the block passes its rules and schedule.</source>
+        <target>Dodawany do &lt;head&gt; na stronach, na których blok spełnia swoje reguły i harmonogram.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.code_before_the_end_of_the">
+        <source>Code before the end of the page</source>
+        <target>Kod przed końcem strony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.added_before_body_on_pages_where">
+        <source>Added before &lt;/body&gt; on pages where the block passes its rules and schedule.</source>
+        <target>Dodawany przed &lt;/body&gt; na stronach, na których blok spełnia swoje reguły i harmonogram.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.placeholders">
+        <source>Placeholders</source>
+        <target>Znaczniki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.click_a_placeholder_to_insert_it">
+        <source>Click a placeholder to insert it where the cursor is in the last field you used.</source>
+        <target>Kliknij znacznik, aby wstawić go w miejscu kursora w ostatnio używanym polu.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.where">
+        <source>Where</source>
+        <target>Gdzie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.hooks_put_the_block_in_a">
+        <source>Hooks put the block in a place on the page. Several blocks in one hook are shown by position, lowest first.</source>
+        <target>Hooki umieszczają blok w wybranym miejscu strony. Kilka bloków w jednym hooku wyświetla się według pozycji, od najniższej.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.hooks">
+        <source>Hooks</source>
+        <target>Hooki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.selected">
+        <source>selected</source>
+        <target>wybrane</target>
+      </trans-unit>
+      <trans-unit id="quince.block.none">
+        <source>None</source>
+        <target>Brak</target>
+      </trans-unit>
+      <trans-unit id="quince.block.off">
+        <source>off</source>
+        <target>wyłączony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_hook_exists_yet">
+        <source>No hook exists yet.</source>
+        <target>Nie ma jeszcze żadnego hooka.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.create_a_hook">
+        <source>Create a hook</source>
+        <target>Utwórz hook</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shops">
+        <source>Shops</source>
+        <target>Sklepy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.also_shown_in_count_shops_outside">
+        <source>Also shown in %count% shops outside the current shop context. Switch the context to change them.</source>
+        <target>Pokazywany także w sklepach spoza bieżącego kontekstu (%count%). Przełącz kontekst, aby je zmienić.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.position">
+        <source>Position</source>
+        <target>Pozycja</target>
+      </trans-unit>
+      <trans-unit id="quince.block.when">
+        <source>When</source>
+        <target>Kiedy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.empty_fields_mean_no_limit_times">
+        <source>Empty fields mean no limit. Times follow the shop time zone.</source>
+        <target>Puste pole oznacza brak ograniczenia. Godziny są liczone według strefy czasowej sklepu.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.from_date">
+        <source>From date</source>
+        <target>Data od</target>
+      </trans-unit>
+      <trans-unit id="quince.block.to_date">
+        <source>To date</source>
+        <target>Data do</target>
+      </trans-unit>
+      <trans-unit id="quince.block.from_hour">
+        <source>From hour</source>
+        <target>Godzina od</target>
+      </trans-unit>
+      <trans-unit id="quince.block.to_hour">
+        <source>To hour</source>
+        <target>Godzina do</target>
+      </trans-unit>
+      <trans-unit id="quince.block.an_end_hour_earlier_than_the">
+        <source>An end hour earlier than the start hour runs past midnight.</source>
+        <target>Godzina końcowa wcześniejsza niż początkowa oznacza zakres przez północ.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.days_of_the_week">
+        <source>Days of the week</source>
+        <target>Dni tygodnia</target>
+      </trans-unit>
+      <trans-unit id="quince.block.mon">
+        <source>Mon</source>
+        <target>Pon</target>
+      </trans-unit>
+      <trans-unit id="quince.block.tue">
+        <source>Tue</source>
+        <target>Wt</target>
+      </trans-unit>
+      <trans-unit id="quince.block.wed">
+        <source>Wed</source>
+        <target>Śr</target>
+      </trans-unit>
+      <trans-unit id="quince.block.thu">
+        <source>Thu</source>
+        <target>Czw</target>
+      </trans-unit>
+      <trans-unit id="quince.block.fri">
+        <source>Fri</source>
+        <target>Pt</target>
+      </trans-unit>
+      <trans-unit id="quince.block.sat">
+        <source>Sat</source>
+        <target>Sob</target>
+      </trans-unit>
+      <trans-unit id="quince.block.sun">
+        <source>Sun</source>
+        <target>Nd</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_day_selected_means_every_day">
+        <source>No day selected means every day.</source>
+        <target>Brak zaznaczonego dnia oznacza każdy dzień.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.rules_and_loading">
+        <source>Rules and loading</source>
+        <target>Reguły i ładowanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.show_the_block_when">
+        <source>Show the block when</source>
+        <target>Pokaż blok, gdy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_include_rules_match">
+        <source>All include rules match</source>
+        <target>Pasują wszystkie reguły uwzględniające</target>
+      </trans-unit>
+      <trans-unit id="quince.block.any_include_rule_matches">
+        <source>Any include rule matches</source>
+        <target>Pasuje dowolna reguła uwzględniająca</target>
+      </trans-unit>
+      <trans-unit id="quince.block.an_exclude_rule_that_matches_always">
+        <source>An exclude rule that matches always hides the block.</source>
+        <target>Pasująca reguła wykluczająca zawsze ukrywa blok.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.refresh">
+        <source>Refresh</source>
+        <target>Odświeżanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.reload_when_the_cart_changes">
+        <source>Reload when the cart changes</source>
+        <target>Wczytaj ponownie po zmianie koszyka</target>
+      </trans-unit>
+      <trans-unit id="quince.block.for_blocks_that_show_cart_values">
+        <source>For blocks that show cart values, such as the amount missing to free shipping.</source>
+        <target>Dla bloków pokazujących dane koszyka, np. kwotę brakującą do darmowej dostawy.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.lazy_loading">
+        <source>Lazy loading</source>
+        <target>Ładowanie opóźnione</target>
+      </trans-unit>
+      <trans-unit id="quince.block.load_when_it_scrolls_into_view">
+        <source>Load when it scrolls into view</source>
+        <target>Wczytaj, gdy pojawi się na ekranie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.speeds_up_the_page_for_blocks">
+        <source>Speeds up the page for blocks far below the fold.</source>
+        <target>Przyspiesza stronę, gdy blok jest daleko poniżej pierwszego ekranu.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.half_of_the_visitors_see_the">
+        <source>Half of the visitors see the content, the other half the variant B content. Views and clicks are counted only with the visitor's consent to statistics.</source>
+        <target>Połowa odwiedzających widzi treść, a druga połowa treść wariantu B. Wyświetlenia i kliknięcia są liczone tylko za zgodą odwiedzającego na statystyki.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.test">
+        <source>Test</source>
+        <target>Test</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_b_test_on">
+        <source>A/B test on</source>
+        <target>Test A/B włączony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.variant_b_content_is_set_in">
+        <source>Variant B content is set in the Content section.</source>
+        <target>Treść wariantu B ustawiasz w sekcji Treść.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.winner">
+        <source>Winner</source>
+        <target>Zwycięzca</target>
+      </trans-unit>
+      <trans-unit id="quince.block.show_only_the_better_variant_once">
+        <source>Show only the better variant once the test is decided</source>
+        <target>Po rozstrzygnięciu testu pokazuj tylko lepszy wariant</target>
+      </trans-unit>
+      <trans-unit id="quince.block.views_before_deciding">
+        <source>Views before deciding</source>
+        <target>Wyświetlenia przed rozstrzygnięciem</target>
+      </trans-unit>
+      <trans-unit id="quince.block.per_variant_at_least_100">
+        <source>Per variant, at least 100.</source>
+        <target>Na wariant, co najmniej 100.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.preview_in_the_shop">
+        <source>Preview in the shop</source>
+        <target>Podgląd w sklepie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_private_link_that_shows_the">
+        <source>A private link that shows the saved block even when it is switched off, outside its schedule or hidden by its rules. Anyone with the link can open it.</source>
+        <target>Prywatny link, który pokazuje zapisany blok, nawet gdy jest wyłączony, poza harmonogramem albo ukryty przez reguły. Każdy, kto ma link, może go otworzyć.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.preview_link">
+        <source>Preview link</source>
+        <target>Link podglądu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.open">
+        <source>Open</source>
+        <target>Otwórz</target>
+      </trans-unit>
+      <trans-unit id="quince.block.the_current_link_will_stop_working">
+        <source>The current link will stop working. Continue?</source>
+        <target>Obecny link przestanie działać. Kontynuować?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.new_link">
+        <source>New link</source>
+        <target>Nowy link</target>
+      </trans-unit>
+      <trans-unit id="quince.block.create_a_preview_link">
+        <source>Create a preview link</source>
+        <target>Utwórz link podglądu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.results">
+        <source>Results</source>
+        <target>Wyniki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_days_shops_of_the_current">
+        <source>All days, shops of the current context.</source>
+        <target>Wszystkie dni, sklepy bieżącego kontekstu.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.clear_the_views_and_clicks_of">
+        <source>Clear the views and clicks of this block and start counting again?</source>
+        <target>Wyzerować wyświetlenia i kliknięcia tego bloku i zacząć liczyć od nowa?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.reset_the_test">
+        <source>Reset the test</source>
+        <target>Zresetuj test</target>
+      </trans-unit>
+      <trans-unit id="quince.block.variant">
+        <source>Variant</source>
+        <target>Wariant</target>
+      </trans-unit>
+      <trans-unit id="quince.block.views">
+        <source>Views</source>
+        <target>Wyświetlenia</target>
+      </trans-unit>
+      <trans-unit id="quince.block.clicks">
+        <source>Clicks</source>
+        <target>Kliknięcia</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ctr">
+        <source>CTR</source>
+        <target>CTR</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_content">
+        <source>A (content)</source>
+        <target>A (treść)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.b_variant_b_content">
+        <source>B (variant B content)</source>
+        <target>B (treść wariantu B)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.results_appear_here_after_the_block">
+        <source>Results appear here after the block is saved.</source>
+        <target>Wyniki pojawią się tutaj po zapisaniu bloku.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.save_the_block_first_then_add">
+        <source>Save the block first, then add its rules.</source>
+        <target>Najpierw zapisz blok, potem dodaj jego reguły.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.rule_types_are_not_available_check">
+        <source>Rule types are not available. Check that the module files are complete.</source>
+        <target>Typy reguł są niedostępne. Sprawdź, czy pliki modułu są kompletne.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.the_block_is_saved_here_before">
+        <source>The block is saved here before every change, with its content, display settings and rules. The last %count% versions are kept.</source>
+        <target>Przed każdą zmianą blok jest tu zapisywany razem z treścią, ustawieniami wyświetlania i regułami. Liczba przechowywanych wersji: %count%.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.saved">
+        <source>Saved</source>
+        <target>Zapisano</target>
+      </trans-unit>
+      <trans-unit id="quince.block.employee">
+        <source>Employee</source>
+        <target>Pracownik</target>
+      </trans-unit>
+      <trans-unit id="quince.block.untitled_block">
+        <source>Untitled block</source>
+        <target>Blok bez tytułu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.restore_this_version_the_current_state">
+        <source>Restore this version? The current state is saved to the history first.</source>
+        <target>Przywrócić tę wersję? Obecny stan zostanie najpierw zapisany w historii.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.restore">
+        <source>Restore</source>
+        <target>Przywróć</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_earlier_versions_yet_the_first">
+        <source>No earlier versions yet. The first one appears after the next change.</source>
+        <target>Nie ma jeszcze wcześniejszych wersji. Pierwsza pojawi się po następnej zmianie.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.new_block">
+        <source>New block</source>
+        <target>Nowy blok</target>
+      </trans-unit>
+      <trans-unit id="quince.block.search_by_title_or_id">
+        <source>Search by title or ID...</source>
+        <target>Szukaj po tytule lub ID...</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_statuses">
+        <source>All statuses</source>
+        <target>Wszystkie statusy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.active">
+        <source>Active</source>
+        <target>Aktywny</target>
+      </trans-unit>
+      <trans-unit id="quince.block.inactive">
+        <source>Inactive</source>
+        <target>Nieaktywny</target>
+      </trans-unit>
+      <trans-unit id="quince.block.filter">
+        <source>Filter</source>
+        <target>Filtruj</target>
+      </trans-unit>
+      <trans-unit id="quince.block.clear">
+        <source>Clear</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+      <trans-unit id="quince.block.turn_on">
+        <source>Turn on</source>
+        <target>Włącz</target>
+      </trans-unit>
+      <trans-unit id="quince.block.turn_off">
+        <source>Turn off</source>
+        <target>Wyłącz</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete_the_selected_blocks_with_their">
+        <source>Delete the selected blocks with their rules and statistics?</source>
+        <target>Usunąć zaznaczone bloki razem z ich regułami i statystykami?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete_selected">
+        <source>Delete selected</source>
+        <target>Usuń zaznaczone</target>
+      </trans-unit>
+      <trans-unit id="quince.block.select_all_rows_on_this_page">
+        <source>Select all rows on this page</source>
+        <target>Zaznacz wszystkie wiersze na tej stronie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.id">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="quince.block.schedule">
+        <source>Schedule</source>
+        <target>Harmonogram</target>
+      </trans-unit>
+      <trans-unit id="quince.block.any_rule_matches">
+        <source>Any rule matches</source>
+        <target>Pasuje dowolna reguła</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_rules_match">
+        <source>All rules match</source>
+        <target>Pasują wszystkie reguły</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_hook">
+        <source>No hook</source>
+        <target>Brak hooka</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_shop">
+        <source>No shop</source>
+        <target>Brak sklepu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.always">
+        <source>Always</source>
+        <target>Zawsze</target>
+      </trans-unit>
+      <trans-unit id="quince.block.block_switched_on">
+        <source>Block switched on</source>
+        <target>Blok włączony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.duplicate">
+        <source>Duplicate</source>
+        <target>Duplikuj</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete_this_block_with_its_rules">
+        <source>Delete this block with its rules and statistics?</source>
+        <target>Usunąć ten blok razem z jego regułami i statystykami?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_block_matches_the_filter">
+        <source>No block matches the filter.</source>
+        <target>Żaden blok nie pasuje do filtra.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_blocks_yet_create_the_first">
+        <source>No blocks yet. Create the first one and assign it to a hook.</source>
+        <target>Nie ma jeszcze bloków. Utwórz pierwszy i przypisz go do hooka.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.clear_the_filter">
+        <source>Clear the filter</source>
+        <target>Wyczyść filtr</target>
+      </trans-unit>
+      <trans-unit id="quince.block.create_the_first_block">
+        <source>Create the first block</source>
+        <target>Utwórz pierwszy blok</target>
+      </trans-unit>
+      <trans-unit id="quince.block.page_page_of_pages_total_blocks">
+        <source>Page %page% of %pages%, %total% blocks</source>
+        <target>Strona %page% z %pages%, bloki: %total%</target>
+      </trans-unit>
+      <trans-unit id="quince.block.total_blocks">
+        <source>%total% blocks</source>
+        <target>Bloki: %total%</target>
+      </trans-unit>
+      <trans-unit id="quince.block.new_hook">
+        <source>New hook</source>
+        <target>Nowy hook</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_hook_is_a_place_in">
+        <source>A hook is a place in the theme. After creating it, put the code shown below in the theme template where the blocks should appear.</source>
+        <target>Hook to miejsce w motywie. Po jego utworzeniu wstaw kod pokazany poniżej w szablonie motywu, tam gdzie mają się pojawiać bloki.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.name">
+        <source>Name</source>
+        <target>Nazwa</target>
+      </trans-unit>
+      <trans-unit id="quince.block.homebanner">
+        <source>HomeBanner</source>
+        <target>HomeBanner</target>
+      </trans-unit>
+      <trans-unit id="quince.block.letters_digits_and_underscores">
+        <source>Letters, digits and underscores.</source>
+        <target>Litery, cyfry i podkreślenia.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.description">
+        <source>Description</source>
+        <target>Opis</target>
+      </trans-unit>
+      <trans-unit id="quince.block.where_the_hook_is_in_the">
+        <source>Where the hook is in the theme</source>
+        <target>Gdzie hook znajduje się w motywie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.blocks_are_shown_in_it">
+        <source>Blocks are shown in it</source>
+        <target>Bloki są w nim wyświetlane</target>
+      </trans-unit>
+      <trans-unit id="quince.block.create_hook">
+        <source>Create hook</source>
+        <target>Utwórz hook</target>
+      </trans-unit>
+      <trans-unit id="quince.block.hook">
+        <source>Hook</source>
+        <target>Hook</target>
+      </trans-unit>
+      <trans-unit id="quince.block.blocks">
+        <source>Blocks</source>
+        <target>Bloki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete_this_hook_blocks_assigned_to">
+        <source>Delete this hook? Blocks assigned to it stop showing there.</source>
+        <target>Usunąć ten hook? Przypisane do niego bloki przestaną się w nim wyświetlać.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.in_the_theme">
+        <source>In the theme</source>
+        <target>W motywie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.save">
+        <source>Save</source>
+        <target>Zapisz</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_hooks_yet_create_one_above">
+        <source>No hooks yet. Create one above, then assign blocks to it.</source>
+        <target>Nie ma jeszcze hooków. Utwórz hook powyżej, a potem przypisz do niego bloki.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_connection_to_the_shop_check">
+        <source>No connection to the shop. Check your network and try again.</source>
+        <target>Brak połączenia ze sklepem. Sprawdź sieć i spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.you_do_not_have_permission_to">
+        <source>You do not have permission to do this, or the page has expired. Reload the page and try again.</source>
+        <target>Nie masz uprawnień do tej operacji albo strona wygasła. Odśwież stronę i spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.something_went_wrong_reload_the_page">
+        <source>Something went wrong. Reload the page and try again.</source>
+        <target>Coś poszło nie tak. Odśwież stronę i spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.remove_it_this_cannot_be_undone">
+        <source>Remove it? This cannot be undone.</source>
+        <target>Usunąć? Tej operacji nie można cofnąć.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.saved_for_shops">
+        <source>Saved for: %shops%</source>
+        <target>Zapisano dla: %shops%</target>
+      </trans-unit>
+      <trans-unit id="quince.block.blocks_in_the_shop">
+        <source>Blocks in the shop</source>
+        <target>Bloki w sklepie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.refresh_after_cart_changes">
+        <source>Refresh after cart changes</source>
+        <target>Odświeżanie po zmianie koszyka</target>
+      </trans-unit>
+      <trans-unit id="quince.block.reload_blocks_that_have_refreshing_switched">
+        <source>Reload blocks that have refreshing switched on</source>
+        <target>Wczytuj ponownie bloki z włączonym odświeżaniem</target>
+      </trans-unit>
+      <trans-unit id="quince.block.when_off_no_block_is_reloaded">
+        <source>When off, no block is reloaded after adding to the cart, whatever its own setting.</source>
+        <target>Gdy wyłączone, żaden blok nie jest wczytywany ponownie po dodaniu do koszyka, niezależnie od jego własnego ustawienia.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.low_stock_threshold">
+        <source>Low stock threshold</source>
+        <target>Próg niskiego stanu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.content_between_if_low_stock_and">
+        <source>Content between {{#if_low_stock}} and {{/if_low_stock}} shows when the product is in stock, at or below this quantity.</source>
+        <target>Treść między {{#if_low_stock}} a {{/if_low_stock}} pokazuje się, gdy produkt jest dostępny w ilości równej temu progowi lub mniejszej.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.custom_css">
+        <source>Custom CSS</source>
+        <target>Własny CSS</target>
+      </trans-unit>
+      <trans-unit id="quince.block.styles_for_your_blocks_added_to">
+        <source>Styles for your blocks, added to every page of the shop. It is kept in the shop settings, so module updates do not overwrite it.</source>
+        <target>Style bloków dodawane na każdej stronie sklepu. Są przechowywane w ustawieniach sklepu, więc aktualizacje modułu ich nie nadpisują.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.views_and_clicks_are_counted_only">
+        <source>Views and clicks are counted only for visitors who agreed to statistics, so the numbers are lower than the real traffic.</source>
+        <target>Wyświetlenia i kliknięcia są liczone tylko dla odwiedzających, którzy zgodzili się na statystyki, więc liczby są niższe niż rzeczywisty ruch.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.from">
+        <source>From</source>
+        <target>Od</target>
+      </trans-unit>
+      <trans-unit id="quince.block.to">
+        <source>To</source>
+        <target>Do</target>
+      </trans-unit>
+      <trans-unit id="quince.block.show">
+        <source>Show</source>
+        <target>Pokaż</target>
+      </trans-unit>
+      <trans-unit id="quince.block.block">
+        <source>Block</source>
+        <target>Blok</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_views_in_this_period">
+        <source>No views in this period.</source>
+        <target>Brak wyświetleń w tym okresie.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shown">
+        <source>Shown</source>
+        <target>Pokazany</target>
+      </trans-unit>
+      <trans-unit id="quince.block.hidden">
+        <source>Hidden</source>
+        <target>Ukryty</target>
+      </trans-unit>
+      <trans-unit id="quince.block.depends_on_the_visitor">
+        <source>Depends on the visitor</source>
+        <target>Zależy od odwiedzającego</target>
+      </trans-unit>
+      <trans-unit id="quince.block.matches">
+        <source>Matches</source>
+        <target>Pasuje</target>
+      </trans-unit>
+      <trans-unit id="quince.block.does_not_match">
+        <source>Does not match</source>
+        <target>Nie pasuje</target>
+      </trans-unit>
+      <trans-unit id="quince.block.not_known">
+        <source>Not known</source>
+        <target>Nieznane</target>
+      </trans-unit>
+      <trans-unit id="quince.block.home_page">
+        <source>Home page</source>
+        <target>Strona główna</target>
+      </trans-unit>
+      <trans-unit id="quince.block.category">
+        <source>Category</source>
+        <target>Kategoria</target>
+      </trans-unit>
+      <trans-unit id="quince.block.product">
+        <source>Product</source>
+        <target>Produkt</target>
+      </trans-unit>
+      <trans-unit id="quince.block.cart">
+        <source>Cart</source>
+        <target>Koszyk</target>
+      </trans-unit>
+      <trans-unit id="quince.block.checkout">
+        <source>Checkout</source>
+        <target>Zamówienie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.cms_page">
+        <source>CMS page</source>
+        <target>Strona CMS</target>
+      </trans-unit>
+      <trans-unit id="quince.block.search_results">
+        <source>Search results</source>
+        <target>Wyniki wyszukiwania</target>
+      </trans-unit>
+      <trans-unit id="quince.block.brand_page">
+        <source>Brand page</source>
+        <target>Strona marki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.supplier_page">
+        <source>Supplier page</source>
+        <target>Strona dostawcy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.other_pages">
+        <source>Other pages</source>
+        <target>Pozostałe strony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.block_tester">
+        <source>Block tester</source>
+        <target>Tester bloków</target>
+      </trans-unit>
+      <trans-unit id="quince.block.checks_whether_a_block_shows_on">
+        <source>Checks whether a block shows on a given page and why, rule by rule, the same way the shop does. Rules about the signed in customer, the cart or the device cannot be checked here and are marked as not known.</source>
+        <target>Sprawdza, czy blok pokazuje się na danej stronie i dlaczego, reguła po regule, tak samo jak sklep. Reguł dotyczących zalogowanego klienta, koszyka lub urządzenia nie da się tu sprawdzić, więc są oznaczone jako nieznane.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_blocks_or_all_in_the">
+        <source>All blocks (or all in the hook)</source>
+        <target>Wszystkie bloki (lub wszystkie w hooku)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.any_hook">
+        <source>Any hook</source>
+        <target>Dowolny hook</target>
+      </trans-unit>
+      <trans-unit id="quince.block.page_type">
+        <source>Page type</source>
+        <target>Typ strony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.from_the_product_or_category">
+        <source>From the product or category</source>
+        <target>Z produktu lub kategorii</target>
+      </trans-unit>
+      <trans-unit id="quince.block.product_id">
+        <source>Product ID</source>
+        <target>ID produktu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.category_id_listing">
+        <source>Category ID (listing)</source>
+        <target>ID kategorii (listing)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.date_and_time">
+        <source>Date and time</source>
+        <target>Data i godzina</target>
+      </trans-unit>
+      <trans-unit id="quince.block.empty_means_now">
+        <source>Empty means now.</source>
+        <target>Puste oznacza teraz.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.language">
+        <source>Language</source>
+        <target>Język</target>
+      </trans-unit>
+      <trans-unit id="quince.block.visitor">
+        <source>Visitor</source>
+        <target>Odwiedzający</target>
+      </trans-unit>
+      <trans-unit id="quince.block.country">
+        <source>Country</source>
+        <target>Kraj</target>
+      </trans-unit>
+      <trans-unit id="quince.block.not_given">
+        <source>Not given</source>
+        <target>Nie podano</target>
+      </trans-unit>
+      <trans-unit id="quince.block.currency">
+        <source>Currency</source>
+        <target>Waluta</target>
+      </trans-unit>
+      <trans-unit id="quince.block.shop_default">
+        <source>Shop default</source>
+        <target>Domyślna sklepu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.search_phrase">
+        <source>Search phrase</source>
+        <target>Fraza wyszukiwania</target>
+      </trans-unit>
+      <trans-unit id="quince.block.page_address">
+        <source>Page address</source>
+        <target>Adres strony</target>
+      </trans-unit>
+      <trans-unit id="quince.block.utm_parameter">
+        <source>UTM parameter</source>
+        <target>Parametr UTM</target>
+      </trans-unit>
+      <trans-unit id="quince.block.utm_value">
+        <source>UTM value</source>
+        <target>Wartość UTM</target>
+      </trans-unit>
+      <trans-unit id="quince.block.run_the_test">
+        <source>Run the test</source>
+        <target>Uruchom test</target>
+      </trans-unit>
+      <trans-unit id="quince.block.rule">
+        <source>Rule</source>
+        <target>Reguła</target>
+      </trans-unit>
+      <trans-unit id="quince.block.result">
+        <source>Result</source>
+        <target>Wynik</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_rules_the_block_is_not">
+        <source>No rules: the block is not limited by rules.</source>
+        <target>Brak reguł: blok nie jest ograniczony regułami.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_block_to_test_for_these">
+        <source>No block to test for these settings.</source>
+        <target>Brak bloków do sprawdzenia dla tych ustawień.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.export">
+        <source>Export</source>
+        <target>Eksport</target>
+      </trans-unit>
+      <trans-unit id="quince.block.downloads_all_blocks_with_their_content">
+        <source>Downloads all blocks with their content in every shop and language, hooks and rules as a JSON file. Statistics and history are not included.</source>
+        <target>Pobiera jako plik JSON wszystkie bloki z treścią we wszystkich sklepach i językach, hookami i regułami. Statystyki i historia nie są dołączane.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.download_json">
+        <source>Download JSON</source>
+        <target>Pobierz JSON</target>
+      </trans-unit>
+      <trans-unit id="quince.block.import">
+        <source>Import</source>
+        <target>Import</target>
+      </trans-unit>
+      <trans-unit id="quince.block.adds_blocks_from_a_file_exported">
+        <source>Adds blocks from a file exported here. The whole file is checked first and saved at once: if anything is wrong, nothing changes. Hooks are matched by name and created when missing.</source>
+        <target>Dodaje bloki z pliku wyeksportowanego w tym miejscu. Cały plik jest najpierw sprawdzany i zapisywany za jednym razem: jeśli coś jest nie tak, nic się nie zmienia. Hooki są dopasowywane po nazwie i tworzone, gdy ich brakuje.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.no_file_chosen">
+        <source>No file chosen</source>
+        <target>Nie wybrano pliku</target>
+      </trans-unit>
+      <trans-unit id="quince.block.a_json_file_from_the_export">
+        <source>A .json file from the export above.</source>
+        <target>Plik .json z eksportu powyżej.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.choose_a_file">
+        <source>Choose a file</source>
+        <target>Wybierz plik</target>
+      </trans-unit>
+      <trans-unit id="quince.block.all_current_blocks_their_rules_and">
+        <source>All current blocks, their rules and statistics will be deleted first. Continue?</source>
+        <target>Najpierw zostaną usunięte wszystkie obecne bloki, ich reguły i statystyki. Kontynuować?</target>
+      </trans-unit>
+      <trans-unit id="quince.block.delete_all_current_blocks_before_importing">
+        <source>Delete all current blocks before importing</source>
+        <target>Usuń wszystkie obecne bloki przed importem</target>
+      </trans-unit>
+      <trans-unit id="quince.block.quince_block">
+        <source>Quince Block</source>
+        <target>Quince Block</target>
+      </trans-unit>
+      <trans-unit id="quince.block.content_blocks_with_display_rules_a">
+        <source>Content blocks with display rules, a schedule and A/B tests, shown in hooks of your own.</source>
+        <target>Bloki treści z regułami wyświetlania, harmonogramem i testami A/B, pokazywane we własnych hookach.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.uninstall_the_module_all_blocks_their">
+        <source>Uninstall the module? All blocks, their rules and statistics will be removed.</source>
+        <target>Odinstalować moduł? Wszystkie bloki, ich reguły i statystyki zostaną usunięte.</target>
+      </trans-unit>
+      <trans-unit id="quince.block.in_stock">
+        <source>In stock</source>
+        <target>Dostępny</target>
+      </trans-unit>
+      <trans-unit id="quince.block.out_of_stock">
+        <source>Out of stock</source>
+        <target>Niedostępny</target>
+      </trans-unit>
+      <trans-unit id="quince.block.tester.brand_id">
+        <source>Brand ID (brand page)</source>
+        <target>ID marki (strona marki)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.tester.supplier_id">
+        <source>Supplier ID (supplier page)</source>
+        <target>ID dostawcy (strona dostawcy)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.nav.edit_block">
+        <source>Edit block</source>
+        <target>Edycja bloku</target>
+      </trans-unit>
+      <trans-unit id="quince.block.nav.statistics">
+        <source>Statistics</source>
+        <target>Statystyki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.nav.tools">
+        <source>Tools</source>
+        <target>Narzędzia</target>
+      </trans-unit>
+      <trans-unit id="quince.block.nav.settings">
+        <source>Settings</source>
+        <target>Ustawienia</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>
