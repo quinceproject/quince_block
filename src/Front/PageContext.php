@@ -155,8 +155,14 @@ final class PageContext
         return is_scalar($values[$name] ?? null) ? (string) $values[$name] : '';
     }
 
-    /** Kontekst z podpisem do atrybutu `data-qb-ctx`. */
-    public function sign(): string
+    /**
+     * Kontekst z podpisem do atrybutu `data-qb-ctx`.
+     *
+     * Podpis obejmuje blok i hook, w którym blok stoi (pusty dla krótkiego kodu).
+     * Znacznik z jednego bloku nie pozwala więc odświeżyć innego, a blok wstawiany
+     * krótkim kodem da się pobrać tylko z kontekstem strony, na której go wstawiono.
+     */
+    public function sign(int $idBlock, string $hook): string
     {
         $json = (string) json_encode([
             $this->idProduct, $this->idProductAttribute, $this->idCategory, $this->idManufacturer,
@@ -164,14 +170,15 @@ final class PageContext
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $payload = rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
 
-        return $payload . '.' . self::mac($payload);
+        return $payload . '.' . self::mac($payload, self::slot($idBlock, $hook));
     }
 
-    public static function verify(string $token): ?self
+    public static function verify(string $token, int $idBlock, string $hook): ?self
     {
         $parts = explode('.', $token, 2);
 
-        if (count($parts) !== 2 || strlen($token) > 4096 || !hash_equals(self::mac($parts[0]), $parts[1])) {
+        if (count($parts) !== 2 || strlen($token) > 4096
+            || !hash_equals(self::mac($parts[0], self::slot($idBlock, $hook)), $parts[1])) {
             return null;
         }
 
@@ -191,6 +198,12 @@ final class PageContext
             'search' => $data[6],
             'url' => $data[7],
         ]);
+    }
+
+    /** Cel podpisu kontekstu: blok i miejsce, w którym stoi. */
+    private static function slot(int $idBlock, string $hook): string
+    {
+        return 'ctx|' . $idBlock . '|' . strtolower($hook);
     }
 
     /** Klucz podpisu wspólny dla kontekstu i statystyk, z rozdzieleniem celów. */

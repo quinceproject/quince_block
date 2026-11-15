@@ -4,6 +4,17 @@ All notable changes to this module are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-11-15
+
+### Security
+
+- **Refreshing or lazy loading returns only the block that was on the page, in the
+  place where it was.** The signed page context is now issued for one block in one
+  hook (or one shortcode). Before, a context taken from any refreshing block could be
+  used to fetch any other active block as if it were a shortcode, including blocks
+  meant for a different hook. Pages cached before the update stop refreshing their
+  blocks until they are loaded again.
+
 ## [0.1.1] - 2026-11-15
 
 ### Security

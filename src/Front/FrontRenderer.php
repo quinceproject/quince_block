@@ -76,7 +76,7 @@ final class FrontRenderer
         }
 
         $page = PageContext::fromRequest($params, $this->context->controller);
-        $memo = $this->idShop() . '|' . $this->idLang() . '|' . strtolower($hookName) . '|' . $page->sign();
+        $memo = $this->idShop() . '|' . $this->idLang() . '|' . strtolower($hookName) . '|' . $page->sign(0, $hookName);
 
         if (isset(self::$hookOutput[$memo])) {
             return self::$hookOutput[$memo];
@@ -170,8 +170,10 @@ final class FrontRenderer
      *
      * Każda pozycja: `id`, `hook` (pusty dla krótkiego kodu), `ctx` (podpisany
      * kontekst z atrybutu bloku), opcjonalnie `variant` (ten sam wariant co przy
-     * pierwszym wyświetleniu). Pozycja z niepoprawnym podpisem albo z blokiem,
-     * którego nie ma w tym hooku, zwraca `visible: false`. `key` w wyniku to
+     * pierwszym wyświetleniu). Podpis kontekstu jest wystawiony dla tego bloku
+     * w tym hooku, więc blok krótkiego kodu wraca tylko tam, gdzie go wstawiono.
+     * Pozycja z niepoprawnym podpisem albo z blokiem, którego nie ma w tym hooku,
+     * zwraca `visible: false`. `key` w wyniku to
      * indeks pozycji w żądaniu.
      *
      * @param array<int,mixed> $items
@@ -191,7 +193,7 @@ final class FrontRenderer
 
             $id = (int) ($item['id'] ?? 0);
             $hook = strtolower((string) ($item['hook'] ?? ''));
-            $page = PageContext::verify((string) ($item['ctx'] ?? ''));
+            $page = PageContext::verify((string) ($item['ctx'] ?? ''), $id, $hook);
             $variant = (string) ($item['variant'] ?? '');
             $out[$key] = ['key' => $key, 'id' => $id, 'visible' => false, 'html' => '', 'variant' => 'a', 'token' => '', 'random' => false];
 
@@ -363,7 +365,7 @@ final class FrontRenderer
             $out[$id] = $this->wrap([
                 'id' => $id,
                 'hook' => $hook,
-                'ctx' => ($block['auto_refresh'] || $lazy) ? $page->sign() : '',
+                'ctx' => ($block['auto_refresh'] || $lazy) ? $page->sign($id, $hook) : '',
                 'refresh' => (bool) $block['auto_refresh'],
                 'lazy' => $lazy,
                 'variant' => $ab['variant'],
