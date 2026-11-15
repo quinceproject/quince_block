@@ -247,7 +247,7 @@ final class FrontRenderer
                 'visible' => trim($html) !== '',
                 'html' => $html,
                 'variant' => $ab['variant'],
-                'token' => $ab['track'] ? AbTest::token($id, $this->idShop()) : '',
+                'token' => $ab['track'] ? AbTest::token($id, $this->idShop(), $ab['variant']) : '',
                 'random' => $ab['random'],
             ];
         }
@@ -367,7 +367,7 @@ final class FrontRenderer
                 'refresh' => (bool) $block['auto_refresh'],
                 'lazy' => $lazy,
                 'variant' => $ab['variant'],
-                'track' => $ab['track'] ? AbTest::token($id, $this->idShop()) : '',
+                'track' => $ab['track'] ? AbTest::token($id, $this->idShop(), $ab['variant']) : '',
                 'random' => $ab['random'],
                 'hidden' => $mode === 'hidden',
                 'content' => $html,

@@ -143,8 +143,8 @@
         }
 
         var data = new FormData();
+        // Wariant jest w tokenie wyświetlenia; serwer bierze go stamtąd.
         data.append('id', el.getAttribute('data-qb-id'));
-        data.append('variant', el.getAttribute('data-qb-variant') === 'b' ? 'b' : 'a');
         data.append('kind', kind);
         data.append('token', token);
 

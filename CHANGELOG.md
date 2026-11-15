@@ -4,6 +4,20 @@ All notable changes to this module are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-11-15
+
+### Security
+
+- **A/B test results can no longer be tipped from outside.** Each display of a block
+  gets its own signed token that carries the variant shown. A view counts once per
+  token and visitor, and a click only after such a view, also once. The variant is
+  read from the token, not from the request. Before, the token was the same for every
+  display and anyone could report views and clicks for either variant, so with
+  auto-optimisation on the shop could switch to a "winner" chosen by an outsider.
+- Pages served from a full-page cache still count every visitor: the same token is
+  counted once per visitor, recognised by a random value in the shop's encrypted
+  cookie.
+
 ## [0.1.0] - 2026-11-15
 
 First public release.

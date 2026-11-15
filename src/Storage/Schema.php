@@ -34,6 +34,7 @@ final class Schema
     public const RULE = 'quince_block_rule';
     public const STATS = 'quince_block_stats';
     public const VERSION = 'quince_block_version';
+    public const AB_SEEN = 'quince_block_ab_seen';
 
     /** Przedrostek nazw hooków, w które moduł wyświetla bloki. */
     public const HOOK_PREFIX = 'displayQuinceBlock';
@@ -131,6 +132,8 @@ final class Schema
             KEY `id_block` (`id_block`)
         ) ENGINE={$e} DEFAULT CHARSET=utf8mb4;";
 
+        $sql[] = self::abSeenTable();
+
         foreach ($sql as $query) {
             if (!Db::getInstance()->execute($query)) {
                 return false;
@@ -140,12 +143,31 @@ final class Schema
         return true;
     }
 
+    /**
+     * Wyświetlenia testu A/B już policzone: jeden wiersz na token wyświetlenia
+     * i odwiedzającego. Pozwala policzyć wyświetlenie raz, a kliknięcie tylko po
+     * wyświetleniu. Wiersze starsze niż doba sprząta `AbTest::recordEvent()`.
+     *
+     * Osobna metoda, bo zakłada ją też skrypt aktualizacji.
+     */
+    public static function abSeenTable(): string
+    {
+        return 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . self::AB_SEEN . '` (
+            `seen_key` CHAR(40) NOT NULL,
+            `id_block` INT UNSIGNED NOT NULL,
+            `clicked` TINYINT(1) NOT NULL DEFAULT 0,
+            `date_add` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`seen_key`),
+            KEY `date_add` (`date_add`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;';
+    }
+
     public static function uninstall(): bool
     {
         $p = _DB_PREFIX_;
         $ok = true;
 
-        foreach ([self::BLOCK, self::BLOCK_SHOP, self::BLOCK_LANG, self::HOOK, self::BLOCK_HOOK, self::RULE, self::STATS, self::VERSION] as $table) {
+        foreach ([self::BLOCK, self::BLOCK_SHOP, self::BLOCK_LANG, self::HOOK, self::BLOCK_HOOK, self::RULE, self::STATS, self::VERSION, self::AB_SEEN] as $table) {
             $ok = Db::getInstance()->execute("DROP TABLE IF EXISTS `{$p}{$table}`") && $ok;
         }
 

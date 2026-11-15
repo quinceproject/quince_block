@@ -142,15 +142,96 @@ final class AbTest
         return $ctrB > $ctrA ? 'b' : 'a';
     }
 
-    /** Podpis zdarzeń bloku, wstawiany do atrybutu `data-qb-token`. */
-    public static function token(int $idBlock, int $idShop): string
+    /** Jak długo token wyświetlenia przyjmujemy. Doba: strona z pamięci podręcznej też się liczy. */
+    private const TOKEN_TTL = 86400;
+
+    /**
+     * Token jednego wyświetlenia, wstawiany do atrybutu `data-qb-token`.
+     *
+     * Niesie pokazany wariant, czas wydania i losową wartość, podpisane kluczem
+     * sklepu. Serwer bierze wariant z tokenu, nie od przeglądarki, więc nikt nie
+     * dopisze kliknięć wariantowi, którego nie widział. Dawny token był stały dla
+     * bloku i każdy mógł nim zgłaszać dowolny wariant w dowolnej liczbie.
+     */
+    public static function token(int $idBlock, int $idShop, string $variant): string
     {
-        return PageContext::mac($idShop . '|' . $idBlock, 'track');
+        $tresc = $idShop . '.' . $idBlock . '.' . ($variant === 'b' ? 'b' : 'a') . '.' . time() . '.' . bin2hex(random_bytes(8));
+
+        return $tresc . '.' . PageContext::mac($tresc, 'track');
     }
 
-    public static function validToken(int $idBlock, int $idShop, string $token): bool
+    /**
+     * Wariant i jednorazowa wartość z ważnego tokenu albo null.
+     *
+     * @return array{variant:string,nonce:string}|null
+     */
+    public static function readToken(int $idBlock, int $idShop, string $token): ?array
     {
-        return $token !== '' && hash_equals(self::token($idBlock, $idShop), $token);
+        $czesci = explode('.', $token);
+
+        if (count($czesci) !== 6) {
+            return null;
+        }
+
+        [$sklep, $blok, $wariant, $czas, $nonce, $podpis] = $czesci;
+        $tresc = implode('.', array_slice($czesci, 0, 5));
+
+        if (!hash_equals(PageContext::mac($tresc, 'track'), $podpis)
+            || (int) $sklep !== $idShop
+            || (int) $blok !== $idBlock
+            || !in_array($wariant, ['a', 'b'], true)
+            || !ctype_xdigit($nonce)
+        ) {
+            return null;
+        }
+
+        $wiek = time() - (int) $czas;
+
+        // Lekko ujemny wiek to różnica zegarów; większy to podróbka albo pomyłka.
+        if ($wiek > self::TOKEN_TTL || $wiek < -300) {
+            return null;
+        }
+
+        return ['variant' => $wariant, 'nonce' => $nonce];
+    }
+
+    /**
+     * Przyjęcie zdarzenia z tokenu: wyświetlenie raz na token i odwiedzającego,
+     * kliknięcie tylko po takim wyświetleniu i też raz.
+     *
+     * Odwiedzającego rozróżniamy, bo przy pełnej pamięci podręcznej stron ten sam
+     * token dostaje wiele osób, a każda z nich ma się policzyć.
+     *
+     * @param string $kind 'view'|'click'
+     */
+    public static function recordEvent(int $idBlock, int $idShop, string $nonce, string $visitor, string $variant, string $kind): bool
+    {
+        $db = Db::getInstance();
+        $tabela = _DB_PREFIX_ . Schema::AB_SEEN;
+        $klucz = sha1($idShop . '|' . $idBlock . '|' . $nonce . '|' . $visitor);
+
+        // Sprzątanie przy okazji: wiersze żyją tyle, ile token.
+        if (random_int(1, 100) === 1) {
+            $db->execute('DELETE FROM `' . $tabela . '` WHERE `date_add` < ' . (time() - self::TOKEN_TTL));
+        }
+
+        if ($kind === 'view') {
+            $db->execute(
+                'INSERT IGNORE INTO `' . $tabela . '` (`seen_key`, `id_block`, `clicked`, `date_add`)
+                 VALUES (\'' . pSQL($klucz) . '\', ' . (int) $idBlock . ', 0, ' . time() . ')'
+            );
+        } else {
+            $db->execute(
+                'UPDATE `' . $tabela . '` SET `clicked` = 1
+                 WHERE `seen_key` = \'' . pSQL($klucz) . '\' AND `clicked` = 0'
+            );
+        }
+
+        if ((int) $db->Affected_Rows() !== 1) {
+            return false;
+        }
+
+        return self::record($idBlock, $idShop, $variant, $kind);
     }
 
     /**
