@@ -984,6 +984,171 @@
         <target>Ustawienia</target>
       </trans-unit>
 
+      <trans-unit id="quince.block.ph.group_shop">
+        <source>Shop and customer</source>
+        <target>Sklep i klient</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.shop_name">
+        <source>Shop name</source>
+        <target>Nazwa sklepu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.customer_name">
+        <source>Customer first name (signed in only)</source>
+        <target>Imię klienta (tylko zalogowanego)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.product_name">
+        <source>Product name</source>
+        <target>Nazwa produktu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.reference">
+        <source>Reference</source>
+        <target>Indeks</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.ean13">
+        <source>EAN-13</source>
+        <target>EAN-13</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.brand">
+        <source>Brand</source>
+        <target>Marka</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.category_name">
+        <source>Default category name</source>
+        <target>Nazwa kategorii domyślnej</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.category_description">
+        <source>Default category description (plain text)</source>
+        <target>Opis kategorii domyślnej (sam tekst)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.product_url">
+        <source>Product address</source>
+        <target>Adres produktu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.add_to_cart_url">
+        <source>Add to cart address</source>
+        <target>Adres dodania do koszyka</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.price">
+        <source>Price tax incl.</source>
+        <target>Cena brutto</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.price_without_tax">
+        <source>Price tax excl.</source>
+        <target>Cena netto</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.stock_status">
+        <source>Stock status</source>
+        <target>Dostępność</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.stock_quantity">
+        <source>Stock quantity</source>
+        <target>Liczba sztuk w magazynie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.weight">
+        <source>Weight</source>
+        <target>Waga</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.cart_total">
+        <source>Cart total without shipping</source>
+        <target>Wartość koszyka bez dostawy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.cart_total_with_shipping">
+        <source>Cart total with shipping</source>
+        <target>Wartość koszyka z dostawą</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.cart_products_count">
+        <source>Number of products in cart</source>
+        <target>Liczba produktów w koszyku</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.group_free_shipping">
+        <source>Free shipping</source>
+        <target>Darmowa dostawa</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.free_shipping_threshold">
+        <source>Free shipping threshold</source>
+        <target>Próg darmowej dostawy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.free_shipping_remaining">
+        <source>Amount missing to free shipping</source>
+        <target>Kwota brakująca do darmowej dostawy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.free_shipping_remaining_raw">
+        <source>Amount missing to free shipping, as a number</source>
+        <target>Kwota brakująca do darmowej dostawy, sama liczba</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.free_shipping_progress">
+        <source>Progress to free shipping in percent</source>
+        <target>Postęp do darmowej dostawy w procentach</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.free_shipping_achieved">
+        <source>Free shipping reached (1 or 0)</source>
+        <target>Darmowa dostawa osiągnięta (1 albo 0)</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.group_conditions">
+        <source>Conditions</source>
+        <target>Warunki</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_free_shipping_not_achieved">
+        <source>Shown until free shipping is reached</source>
+        <target>Widoczne, dopóki koszyk nie osiągnie darmowej dostawy</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_free_shipping_achieved">
+        <source>Shown when free shipping is reached</source>
+        <target>Widoczne, gdy koszyk osiągnie darmową dostawę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_in_stock">
+        <source>Shown when the product is in stock</source>
+        <target>Widoczne, gdy produkt jest na stanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_out_of_stock">
+        <source>Shown when the product is out of stock</source>
+        <target>Widoczne, gdy produktu nie ma na stanie</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_low_stock">
+        <source>Shown when the product stock is low</source>
+        <target>Widoczne, gdy zostało mało sztuk produktu</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_on_sale">
+        <source>Shown when the product has a discount</source>
+        <target>Widoczne, gdy produkt ma obniżkę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_has_manufacturer">
+        <source>Shown when the product has a brand</source>
+        <target>Widoczne, gdy produkt ma markę</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_new_product">
+        <source>Shown when the product is new</source>
+        <target>Widoczne, gdy produkt jest nowością</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_cart_empty">
+        <source>Shown when the cart is empty</source>
+        <target>Widoczne, gdy koszyk jest pusty</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_cart_not_empty">
+        <source>Shown when the cart is not empty</source>
+        <target>Widoczne, gdy w koszyku coś jest</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_logged_in">
+        <source>Shown to signed in customers</source>
+        <target>Widoczne dla zalogowanych klientów</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.if_guest">
+        <source>Shown to visitors who are not signed in</source>
+        <target>Widoczne dla niezalogowanych odwiedzających</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.group_catalogue">
+        <source>Catalogue</source>
+        <target>Katalog</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.products_count">
+        <source>Number of active products matching the brand, category (with subcategories) and feature value. Leave out what you do not need. "words" adds the word in the right form: one|few|many or one|many</source>
+        <target>Liczba aktywnych produktów danej marki, z kategorii (razem z podkategoriami) i z wartością cechy. Parametry, których nie potrzebujesz, usuń. „words” dokleja słowo w formie pasującej do liczby: jeden|kilka|wiele (np. narzędzie|narzędzia|narzędzi) albo jeden|wiele</target>
+      </trans-unit>
+      <trans-unit id="quince.block.ph.products_url">
+        <source>Address of the category, or of the brand page, with the feature value selected in the filters</source>
+        <target>Adres kategorii albo strony marki z wartością cechy zaznaczoną w filtrach</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

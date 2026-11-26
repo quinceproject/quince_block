@@ -43,6 +43,23 @@ visitor decide whether the block appears on a given page.
   show a part of the content only when the condition holds. The edit screen lists every
   token and inserts it with one click. Other modules can add their own tokens through
   the `actionQuinceBlockRegisterPlaceholders` hook.
+- **Catalogue counts and links.** `{{products_count}}` shows how many active products
+  match a brand, a category (with its subcategories) and a feature value, and
+  `{{products_url}}` gives the address of that list with the feature selected in the
+  filters. A brand tile keeps its number and link up to date without editing:
+
+  ```
+  <a href='{{products_url manufacturer="Jaltest" feature="Vehicle make" value="Volvo"}}'>
+    Volvo: {{products_count manufacturer="Jaltest" feature="Vehicle make" value="Volvo" words="tool|tools"}}
+  </a>
+  ```
+
+  Every parameter is optional. `words` adds the word in the form that fits the number:
+  two forms (`tool|tools`) or three for languages such as Polish
+  (`narzędzie|narzędzia|narzędzi`: 1, 2 to 4, 5 and more). `products_url` starts from
+  the category when one is given, otherwise from the brand page, and takes `label` when
+  the feature has its own URL name in the filter module. Counts are kept for an hour, or
+  until anything is saved in the module.
 - **Refresh and lazy loading.** A block can reload itself when the cart changes, for
   example a bar showing the amount missing to free shipping, and can load only when it
   scrolls into view. Blocks added to the page later, such as in a cart drawer or a

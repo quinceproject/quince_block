@@ -4,6 +4,21 @@ All notable changes to this module are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-11-26
+
+### Added
+
+- `{{products_count}}`: the number of active products visible in the catalogue that
+  match a brand, a category (with its subcategories) and a feature value, with the
+  word in the right form for the number (`words="tool|tools"`, or three forms such as
+  `narzędzie|narzędzia|narzędzi`). The count is kept for an hour.
+- `{{products_url}}`: the address of the category or brand page with the feature value
+  selected in the filters, in the format of the PrestaShop filter module.
+
+### Fixed
+
+- The list of placeholders on the block edit screen is translated into Polish.
+
 ## [0.1.3] - 2026-11-16
 
 ### Changed

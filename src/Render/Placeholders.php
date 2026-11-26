@@ -146,6 +146,17 @@ final class Placeholders
             $out[] = ['token' => '{{#' . $name . '}}...{{/' . $name . '}}', 'label' => $label, 'group' => $t('Conditions')];
         }
 
+        $out[] = [
+            'token' => '{{products_count manufacturer="" category="" feature="" value="" words="product|products"}}',
+            'label' => $t('Number of active products matching the brand, category (with subcategories) and feature value. Leave out what you do not need. "words" adds the word in the right form: one|few|many or one|many'),
+            'group' => $t('Catalogue'),
+        ];
+        $out[] = [
+            'token' => '{{products_url manufacturer="" category="" feature="" value=""}}',
+            'label' => $t('Address of the category, or of the brand page, with the feature value selected in the filters'),
+            'group' => $t('Catalogue'),
+        ];
+
         return $out;
     }
 
@@ -160,6 +171,11 @@ final class Placeholders
     {
         if (strpos($html, '{{') === false) {
             return $html;
+        }
+
+        // Tokeny katalogu mają parametry, więc idą osobno i przed resztą.
+        if (CatalogTokens::has($html)) {
+            $html = (new CatalogTokens($this->context))->render($html);
         }
 
         if (!preg_match_all('/\{\{([#\/]?)([a-z0-9_]+)\}\}/', $html, $m)) {
